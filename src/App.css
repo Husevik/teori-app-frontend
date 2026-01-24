@@ -1,0 +1,213 @@
+/* ---------- COLOR SYSTEM (LANDSCAPE-BASED) ---------- */
+:root {
+  --sky-blue: #7bbce6;
+  --mist-sky: #eaf4fb;
+  --lake-blue: #3fa9c9;
+  --pine-green: #2e6f5e;
+  --meadow-green: #7fc8a9;
+  --asphalt: #3a3f45;
+  --rock: #8c9196;
+  --road-yellow: #f2c94c;
+}
+
+/* ---------- GLOBAL ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--asphalt);
+}
+
+/* ---------- BACKGROUND ---------- */
+.app-bg {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    var(--sky-blue),
+    var(--mist-sky)
+  );
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- HEADER ---------- */
+.top-bar {
+  height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(6px);
+  background: rgba(234, 244, 251, 0.8);
+}
+
+.brand {
+  font-weight: 600;
+}
+
+.user {
+  font-size: 14px;
+  color: var(--rock);
+}
+
+/* ---------- CONTENT ---------- */
+.content {
+  flex: 1;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+/* 🖥 Desktop max-width (1) */
+@media (min-width: 900px) {
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+}
+
+/* ---------- CARD ---------- */
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(63, 169, 201, 0.15);
+}
+
+.card h2,
+.card h3 {
+  margin-top: 0;
+}
+
+/* ---------- NAVIGATION ---------- */
+.bottom-nav {
+  height: 64px;
+  background: var(--mist-sky);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  /* 📱 Safe area for phones (2) */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  border: none;
+  background: none;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--rock);
+}
+
+.nav-item.active {
+  color: var(--lake-blue);
+  font-weight: 600;
+}
+
+/* 👆 Tap feedback (3) */
+.nav-item:active {
+  transform: scale(0.97);
+}
+
+/* ---------- STATES ---------- */
+.loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mist-sky);
+}
+
+/* ---------- LOGIN ---------- */
+.login-card {
+  margin: auto;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  width: 320px;
+  box-shadow: 0 12px 30px rgba(63, 169, 201, 0.2);
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.login-form input {
+  padding: 10px;
+  font-size: 15px;
+}
+
+.login-form button {
+  padding: 10px;
+  font-size: 16px;
+  background: var(--lake-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background: #3498b8;
+}
+
+.login-form button:active {
+  transform: scale(0.97);
+}
+
+.error {
+  color: #c0392b;
+  font-size: 14px;
+}
+
+/* ---------- ADMIN ---------- */
+.admin-badge {
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: 6px;
+  background: var(--road-yellow);
+  color: #333;
+}
+
+.admin-card {
+  border-left: 6px solid var(--lake-blue);
+}
+
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-actions button {
+  padding: 12px;
+  font-size: 14px;
+  background: var(--mist-sky);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 👆 Tap feedback (3) */
+.admin-actions button:active {
+  transform: scale(0.97);
+}
+
+.admin-actions button:hover {
+  background: #dcecf6;
+}
+
