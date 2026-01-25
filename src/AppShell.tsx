@@ -5,32 +5,27 @@ type Props = {
   children: ReactNode;
   user: {
     email: string;
+    isAdmin?: boolean;
   };
-  isAdmin: boolean;
+  onLogout: () => void;
 };
 
-export default function AppShell({ children, user, isAdmin }: Props) {
+export default function AppShell({ children, user, onLogout }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  function isActive(path: string) {
-    return location.pathname === path;
-  }
-
-  function logout() {
-    localStorage.removeItem("token");
-    window.location.reload();
+  function active(path: string) {
+    return location.pathname === path ? "active" : "";
   }
 
   return (
     <div className="app-bg">
       {/* HEADER */}
       <header className="top-bar">
-        <div className="brand">TrafikkLæring</div>
-
+        <div className="brand">Teori-app</div>
         <div className="user">
           {user.email}
-          {isAdmin && <span className="admin-badge">ADMIN</span>}
+          {user.isAdmin && <span className="admin-badge">ADMIN</span>}
         </div>
       </header>
 
@@ -39,23 +34,29 @@ export default function AppShell({ children, user, isAdmin }: Props) {
 
       {/* NAV */}
       <nav className="bottom-nav">
-        <button
-          className={`nav-item ${isActive("/") ? "active" : ""}`}
-          onClick={() => navigate("/")}
-        >
+        <button className={active("/")} onClick={() => navigate("/")}>
           Hjem
         </button>
 
-        {isAdmin && (
+        <button className={active("/quiz")} onClick={() => navigate("/quiz")}>
+          Quiz
+        </button>
+
+        {user.isAdmin && (
           <button
-            className={`nav-item ${isActive("/admin") ? "active" : ""}`}
+            className={active("/admin")}
             onClick={() => navigate("/admin")}
           >
             Admin
           </button>
         )}
 
-        <button className="nav-item" onClick={logout}>
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            onLogout();
+          }}
+        >
           Logg ut
         </button>
       </nav>

@@ -4,13 +4,14 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AppShell from "./AppShell";
 import Login from "./Login";
 
+// Admin
 import AdminDashboard from "./admin/AdminDashboard";
 import QuizList from "./admin/QuizList";
 import QuizEditor from "./admin/QuizEditor";
 import EditQuiz from "./admin/EditQuiz";
 
+// Student
 import StudentQuiz from "./student/StudentQuiz";
-import QuizResult from "./student/QuizResult";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,28 +36,34 @@ export default function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return <div className="loading">Laster…</div>;
-  }
+  if (loading) return <div className="loading">Laster…</div>;
 
-  if (!user) {
-    return <Login onLogin={setUser} />;
-  }
-
-  const isAdmin = user.email === "admin@example.com";
+  if (!user) return <Login onLogin={setUser} />;
 
   return (
-    <AppShell user={user} isAdmin={isAdmin}>
+    <AppShell
+      user={user}
+      onLogout={() => setUser(null)}
+    >
       <Routes>
-        {/* Student */}
-        <Route path="/" element={<StudentQuiz />} />
+        {/* 🏠 HJEM */}
         <Route
-          path="/quiz/result"
-          element={<QuizResult score={0} total={0} />}
+          path="/"
+          element={
+            <div className="card">
+              <h2>Velkommen 👋</h2>
+              <p>
+                Velg quiz for å starte øving, eller fortsett der du slapp.
+              </p>
+            </div>
+          }
         />
 
-        {/* Admin */}
-        {isAdmin && (
+        {/* 🎓 STUDENT */}
+        <Route path="/quiz" element={<StudentQuiz />} />
+
+        {/* 🛠 ADMIN */}
+        {user.isAdmin && (
           <>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/quizzes" element={<QuizList />} />
@@ -65,6 +72,7 @@ export default function App() {
           </>
         )}
 
+        {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AppShell>
