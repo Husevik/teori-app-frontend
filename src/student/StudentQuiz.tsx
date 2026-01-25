@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import QuizResult from "./QuizResult";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 type Question = {
+  id: string;
   text: string;
-  answers: string[];
-  correctIndex: number;
+  answers: { text: string }[];
+  correct_index: number;
 };
 
 type Quiz = {
@@ -16,84 +18,141 @@ type Quiz = {
 };
 
 export default function StudentQuiz() {
+  const navigate = useNavigate();
+
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/quiz/random`)
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.questions) setQuiz(data);
-      });
+        if (data && Array.isArray(data.questions) && data.questions.length > 0) {
+          setQuiz(data);
+        } else {
+          setQuiz(null);
+        }
+      })
+      .catch(() => setQuiz(null))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!quiz) {
-    return <div className="card">Ingen quiz tilgjengelig.</div>;
+  /* ---------- STATES ---------- */
+
+  if (loading) {
+    return <div className="card">Laster quiz…</div>;
   }
 
-  const q = quiz; // ✅ TypeScript vet nå at quiz IKKE er null
-  const question = q.questions[current];
+  if (!quiz || quiz.questions.length === 0) {
+    return (
+      <div className="card">
+        <p>Ingen quiz tilgjengelig.</p>
+        <button onClick={() => navigate("/")}>⬅️ Tilbake til Hjem</button>
+      </div>
+    );
+  }
 
   if (finished) {
-    return <QuizResult score={score} total={q.questions.length} />;
+    return (
+      <div className="card">
+        <QuizResult score={score} total={quiz.questions.length} />
+
+        <button
+          style={{ marginTop: "16px" }}
+          onClick={() => navigate("/")}
+        >
+          ⬅️ Tilbake til Hjem
+        </button>
+      </div>
+    );
   }
+
+  const question = quiz.questions[current];
+  if (!question) {
+    return <div className="card">Laster spørsmål…</div>;
+  }
+
+  /* ---------- ACTIONS ---------- */
 
   function checkAnswer() {
     if (selected === null) return;
-    setChecked(true);
-    if (selected === question.correctIndex) {
+
+    if (selected === question.correct_index) {
       setScore((s) => s + 1);
     }
+    setChecked(true);
   }
 
-  function next() {
+  function nextQuestion() {
     setChecked(false);
     setSelected(null);
 
-    if (current + 1 < q.questions.length) {
+    if (current + 1 < quiz.questions.length) {
       setCurrent((c) => c + 1);
     } else {
       setFinished(true);
     }
   }
 
+  /* ---------- UI ---------- */
+
   return (
     <div className="card">
-      <h2>{q.title}</h2>
+      {/* 🔙 BACK */}
+      <button
+        style={{ marginBottom: "12px" }}
+        onClick={() => navigate("/")}
+      >
+        ⬅️ Tilbake til Hjem
+      </button>
+
+      <h2>{quiz.title}</h2>
+
+      <p>
+        Spørsmål {current + 1} / {quiz.questions.length}
+      </p>
+
       <h3>{question.text}</h3>
 
-      {question.answers.map((a, i) => {
-        let className = "";
+      <div>
+        {question.answers.map((a, i) => {
+          let bg = "#fff";
 
-        if (checked) {
-          if (i === question.correctIndex) className = "correct";
-          else if (i === selected) className = "wrong";
-        }
+          if (checked) {
+            if (i === question.correct_index) bg = "#b6f5c2";
+            else if (i === selected) bg = "#f5b6b6";
+          }
 
-        return (
-          <button
-            key={i}
-            className={`answer ${className}`}
-            disabled={checked}
-            onClick={() => setSelected(i)}
-          >
-            {a}
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={i}
+              onClick={() => !checked && setSelected(i)}
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                background: bg,
+                padding: "10px",
+                width: "100%",
+              }}
+            >
+              {a.text}
+            </button>
+          );
+        })}
+      </div>
 
       {!checked ? (
-        <button onClick={checkAnswer} disabled={selected === null}>
+        <button disabled={selected === null} onClick={checkAnswer}>
           Sjekk svar
         </button>
       ) : (
-        <button onClick={next}>Neste</button>
+        <button onClick={nextQuestion}>Neste</button>
       )}
     </div>
   );
 }
-
