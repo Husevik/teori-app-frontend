@@ -18,7 +18,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
-  // 🔐 Sjekk eksisterende login
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -27,9 +26,7 @@ export default function App() {
     }
 
     fetch(`${API_URL}/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
@@ -42,48 +39,32 @@ export default function App() {
     return <div className="loading">Laster…</div>;
   }
 
-  // ❌ Ikke innlogget
   if (!user) {
     return <Login onLogin={setUser} />;
   }
 
-  // ✅ Innlogget
-  return (
-    <AppShell
-      user={user}
-      isAdmin={user.email === "admin@example.com"}
-      onLogout={() => {
-        localStorage.removeItem("token");
-        setUser(null);
-      }}
-    >
-      <Routes>
-        {/* 🏠 HJEM */}
-        <Route
-          path="/"
-          element={
-            <div className="card">
-              <h2>Velkommen 👋</h2>
-              <p>Dette blir læringsreisen din – quiz, progresjon og mestring.</p>
+  const isAdmin = user.email === "admin@example.com";
 
-              <button onClick={() => (window.location.href = "/quiz")}>
-                ▶ Start quiz
-              </button>
-            </div>
-          }
+  return (
+    <AppShell user={user} isAdmin={isAdmin}>
+      <Routes>
+        {/* Student */}
+        <Route path="/" element={<StudentQuiz />} />
+        <Route
+          path="/quiz/result"
+          element={<QuizResult score={0} total={0} />}
         />
 
-        {/* 🎓 STUDENT */}
-        <Route path="/quiz" element={<StudentQuiz />} />
-        <Route path="/quiz/result" element={<QuizResult />} />
+        {/* Admin */}
+        {isAdmin && (
+          <>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/quizzes" element={<QuizList />} />
+            <Route path="/admin/quizzes/new" element={<QuizEditor />} />
+            <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
+          </>
+        )}
 
-        {/* 🛠 ADMIN */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/quizzes" element={<QuizList />} />
-        <Route path="/admin/quizzes/new" element={<QuizEditor />} />
-        <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
-
-        {/* 🔁 FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AppShell>
