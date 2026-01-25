@@ -17,29 +17,19 @@ export default function QuizList() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      console.error("Ingen token – ikke innlogget");
-      setLoading(false);
-      return;
-    }
-
     fetch(`${API_URL}/admin/quizzes`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Kunne ikke hente quizzer");
-        }
-        return res.json();
-      })
+      .then((r) => r.json())
       .then((data) => {
-        console.log("QUIZZES FROM API:", data); // 👈 VIKTIG DEBUG
-        setQuizzes(data);
-      })
-      .catch((err) => {
-        console.error(err);
+        // 🔥 VIKTIG: backend returnerer ARRAY, ikke { ok: true }
+        if (Array.isArray(data)) {
+          setQuizzes(data);
+        } else {
+          setQuizzes([]);
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -52,26 +42,27 @@ export default function QuizList() {
     <div className="card">
       <h2>Quizzer</h2>
 
+      {quizzes.length === 0 && (
+        <p>Ingen quizzer funnet.</p>
+      )}
+
+      <ul>
+        {quizzes.map((q) => (
+          <li key={q.id} style={{ marginBottom: "8px" }}>
+            <strong>{q.title}</strong>
+            <br />
+            <button
+              onClick={() => navigate(`/admin/quizzes/${q.id}`)}
+            >
+              Rediger
+            </button>
+          </li>
+        ))}
+      </ul>
+
       <button onClick={() => navigate("/admin/quizzes/new")}>
         ➕ Ny quiz
       </button>
-
-      {quizzes.length === 0 ? (
-        <p>Ingen quizzer funnet.</p>
-      ) : (
-        <ul style={{ marginTop: 16 }}>
-          {quizzes.map((quiz) => (
-            <li key={quiz.id} style={{ marginBottom: 8 }}>
-              <strong>{quiz.title}</strong>{" "}
-              <button
-                onClick={() => navigate(`/admin/quizzes/${quiz.id}`)}
-              >
-                Rediger
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }
