@@ -4,10 +4,14 @@ import QuizResult from "./QuizResult";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+type Answer = {
+  text: string;
+};
+
 type Question = {
   id: string;
   text: string;
-  answers: { text: string }[];
+  answers: Answer[];
   correct_index: number;
 };
 
@@ -57,10 +61,18 @@ export default function StudentQuiz() {
     );
   }
 
+  // 🔒 TypeScript vet nå at quiz ALDRI er null under
+  const safeQuiz = quiz;
+  const question = safeQuiz.questions[current];
+
+  if (!question) {
+    return <div className="card">Laster spørsmål…</div>;
+  }
+
   if (finished) {
     return (
       <div className="card">
-        <QuizResult score={score} total={quiz.questions.length} />
+        <QuizResult score={score} total={safeQuiz.questions.length} />
 
         <button
           style={{ marginTop: "16px" }}
@@ -70,11 +82,6 @@ export default function StudentQuiz() {
         </button>
       </div>
     );
-  }
-
-  const question = quiz.questions[current];
-  if (!question) {
-    return <div className="card">Laster spørsmål…</div>;
   }
 
   /* ---------- ACTIONS ---------- */
@@ -92,7 +99,7 @@ export default function StudentQuiz() {
     setChecked(false);
     setSelected(null);
 
-    if (current + 1 < quiz.questions.length) {
+    if (current + 1 < safeQuiz.questions.length) {
       setCurrent((c) => c + 1);
     } else {
       setFinished(true);
@@ -103,7 +110,6 @@ export default function StudentQuiz() {
 
   return (
     <div className="card">
-      {/* 🔙 BACK */}
       <button
         style={{ marginBottom: "12px" }}
         onClick={() => navigate("/")}
@@ -111,10 +117,10 @@ export default function StudentQuiz() {
         ⬅️ Tilbake til Hjem
       </button>
 
-      <h2>{quiz.title}</h2>
+      <h2>{safeQuiz.title}</h2>
 
       <p>
-        Spørsmål {current + 1} / {quiz.questions.length}
+        Spørsmål {current + 1} / {safeQuiz.questions.length}
       </p>
 
       <h3>{question.text}</h3>
