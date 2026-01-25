@@ -17,9 +17,14 @@ export default function AppShell({ children, user, isAdmin }: Props) {
     return location.pathname === path;
   }
 
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.reload();
+  }
+
   return (
     <div className="app-bg">
-      {/* ---------- HEADER ---------- */}
+      {/* HEADER */}
       <header className="top-bar">
         <div className="brand">TrafikkLæring</div>
 
@@ -29,10 +34,10 @@ export default function AppShell({ children, user, isAdmin }: Props) {
         </div>
       </header>
 
-      {/* ---------- MAIN CONTENT ---------- */}
+      {/* CONTENT */}
       <main className="content">{children}</main>
 
-      {/* ---------- BOTTOM NAV ---------- */}
+      {/* NAV */}
       <nav className="bottom-nav">
         <button
           className={`nav-item ${isActive("/") ? "active" : ""}`}
@@ -50,13 +55,7 @@ export default function AppShell({ children, user, isAdmin }: Props) {
           </button>
         )}
 
-        <button
-          className="nav-item"
-          onClick={() => {
-            localStorage.removeItem("token");
-            window.location.reload();
-          }}
-        >
+        <button className="nav-item" onClick={logout}>
           Logg ut
         </button>
       </nav>

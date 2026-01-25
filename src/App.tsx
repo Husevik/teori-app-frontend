@@ -13,9 +13,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ email: string } | null>(null);
 
-  // 🔹 Sjekk om bruker allerede er logget inn
+  // 🔐 Sjekk eksisterende innlogging
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -30,7 +30,9 @@ export default function App() {
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.ok) setUser(data.user);
+        if (data?.ok) {
+          setUser(data.user);
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -39,17 +41,15 @@ export default function App() {
     return <div className="loading">Laster…</div>;
   }
 
-  // 🔐 Ikke innlogget → kun login
+  // 🔑 Ikke innlogget
   if (!user) {
     return <Login onLogin={setUser} />;
   }
 
-  // ✅ Innlogget → AppShell + routing
+  const isAdmin = user.email === "admin@example.com";
+
   return (
-    <AppShell user={user} onLogout={() => {
-      localStorage.removeItem("token");
-      setUser(null);
-    }}>
+    <AppShell user={user} isAdmin={isAdmin}>
       <Routes>
         {/* Student / hjem */}
         <Route
@@ -65,10 +65,14 @@ export default function App() {
         />
 
         {/* Admin */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/quizzes" element={<QuizList />} />
-        <Route path="/admin/quizzes/new" element={<QuizEditor />} />
-        <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
+        {isAdmin && (
+          <>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/quizzes" element={<QuizList />} />
+            <Route path="/admin/quizzes/new" element={<QuizEditor />} />
+            <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
+          </>
+        )}
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
