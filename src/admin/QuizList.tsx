@@ -24,12 +24,17 @@ export default function QuizList() {
     })
       .then((r) => r.json())
       .then((data) => {
-        // 🔥 VIKTIG: backend returnerer ARRAY, ikke { ok: true }
+        console.log("QUIZ API RESPONSE:", data);
+
         if (Array.isArray(data)) {
           setQuizzes(data);
         } else {
           setQuizzes([]);
         }
+      })
+      .catch((err) => {
+        console.error("QUIZ FETCH ERROR", err);
+        setQuizzes([]);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -42,18 +47,14 @@ export default function QuizList() {
     <div className="card">
       <h2>Quizzer</h2>
 
-      {quizzes.length === 0 && (
-        <p>Ingen quizzer funnet.</p>
-      )}
+      {quizzes.length === 0 && <p>Ingen quizzer funnet.</p>}
 
       <ul>
         {quizzes.map((q) => (
-          <li key={q.id} style={{ marginBottom: "8px" }}>
+          <li key={q.id} style={{ marginBottom: "12px" }}>
             <strong>{q.title}</strong>
             <br />
-            <button
-              onClick={() => navigate(`/admin/quizzes/${q.id}`)}
-            >
+            <button onClick={() => navigate(`/admin/quizzes/${q.id}`)}>
               Rediger
             </button>
           </li>
