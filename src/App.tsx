@@ -1,57 +1,78 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import AppShell from "./AppShell";
+
+import AppShell from "./Appshell";
 import Login from "./Login";
+
 import AdminDashboard from "./admin/AdminDashboard";
 import QuizList from "./admin/QuizList";
 import QuizEditor from "./admin/QuizEditor";
 import EditQuiz from "./admin/EditQuiz";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function App() {
-console.log("API URL:", import.meta.env.VITE_API_URL);  
-const [user, setUser] = useState<any>(null);
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
+  // 🔹 Sjekk om bruker allerede er logget inn
   useEffect(() => {
-    if (!token) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-    fetch("https://web-app-backend.husevik.workers.dev/me", {
-      headers: { Authorization: `Bearer ${token}` },
+    fetch(`${API_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then((r) => r.json())
-      .then((d) => setUser(d.user));
-  }, [token]);
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.ok) setUser(data.user);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  if (!token) return <Login onLogin={setUser} />;
-  if (!user) return <div className="loading">Laster…</div>;
+  if (loading) {
+    return <div className="loading">Laster…</div>;
+  }
 
-  const isAdmin = user.email === "admin@example.com";
+  // 🔐 Ikke innlogget → kun login
+  if (!user) {
+    return <Login onLogin={setUser} />;
+  }
 
+  // ✅ Innlogget → AppShell + routing
   return (
-    <AppShell user={user} isAdmin={isAdmin}>
+    <AppShell user={user} onLogout={() => {
+      localStorage.removeItem("token");
+      setUser(null);
+    }}>
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* Student / hjem */}
+        <Route
+          path="/"
+          element={
+            <div className="card">
+              <h2>Velkommen 👋</h2>
+              <p>
+                Dette blir læringsreisen din – quiz, progresjon og mestring.
+              </p>
+            </div>
+          }
+        />
 
-        {isAdmin && (
-          <>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/quizzes" element={<QuizList />} />
-            <Route path="/admin/quiz/new" element={<QuizEditor />} />
-            <Route path="/admin/quiz/edit/:id" element={<EditQuiz />} />
-          </>
-        )}
+        {/* Admin */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/quizzes" element={<QuizList />} />
+        <Route path="/admin/quizzes/new" element={<QuizEditor />} />
+        <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
 
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AppShell>
-  );
-}
-
-function Home() {
-  return (
-    <div className="card">
-      <h2>Velkommen 👋</h2>
-      <p>Dette blir læringsreisen din.</p>
-    </div>
   );
 }
