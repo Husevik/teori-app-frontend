@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import AppShell from "./Appshell";
+import AppShell from "./AppShell";
 import Login from "./Login";
 
 import AdminDashboard from "./admin/AdminDashboard";
