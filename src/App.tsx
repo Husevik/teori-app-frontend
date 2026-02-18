@@ -4,14 +4,16 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AppShell from "./AppShell";
 import Login from "./Login";
 
-// Admin
 import AdminDashboard from "./admin/AdminDashboard";
 import QuizList from "./admin/QuizList";
 import QuizEditor from "./admin/QuizEditor";
 import EditQuiz from "./admin/EditQuiz";
 
-// Student
 import StudentQuiz from "./student/StudentQuiz";
+import QuizResult from "./student/QuizResult";
+
+import Level1 from "./student/Level1";
+import LevelResult from "./student/LevelResult";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -27,7 +29,9 @@ export default function App() {
     }
 
     fetch(`${API_URL}/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
@@ -37,44 +41,44 @@ export default function App() {
   }, []);
 
   if (loading) return <div className="loading">Laster…</div>;
-
   if (!user) return <Login onLogin={setUser} />;
 
   return (
-    <AppShell
-      user={user}
-      onLogout={() => setUser(null)}
-    >
+    <AppShell user={user} isAdmin={false}>
       <Routes>
-        {/* 🏠 HJEM */}
         <Route
           path="/"
           element={
             <div className="card">
               <h2>Velkommen 👋</h2>
-              <p>
-                Velg quiz for å starte øving, eller fortsett der du slapp.
-              </p>
+
+              <div style={{ display: "grid", gap: 12 }}>
+                <button onClick={() => location.href = "/level/1"}>
+                  🎮 Spill Level 1
+                </button>
+
+                <button onClick={() => location.href = "/quiz"}>
+                  📘 Klassisk Quiz
+                </button>
+              </div>
             </div>
           }
         />
 
-        {/* 🎓 STUDENT */}
+        <Route path="/level/1" element={<Level1 />} />
+        <Route path="/level/result" element={<LevelResult />} />
+
         <Route path="/quiz" element={<StudentQuiz />} />
+        <Route path="/quiz/result" element={<QuizResult />} />
 
-        {/* 🛠 ADMIN */}
-        {user.isAdmin && (
-          <>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/quizzes" element={<QuizList />} />
-            <Route path="/admin/quizzes/new" element={<QuizEditor />} />
-            <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
-          </>
-        )}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/quizzes" element={<QuizList />} />
+        <Route path="/admin/quizzes/new" element={<QuizEditor />} />
+        <Route path="/admin/quizzes/:id" element={<EditQuiz />} />
 
-        {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AppShell>
   );
 }
+
