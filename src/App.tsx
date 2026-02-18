@@ -51,15 +51,30 @@ export default function App() {
             <div className="card">
               <h2>Velkommen 👋</h2>
 
-              <div style={{ display: "grid", gap: 12 }}>
-                <button onClick={() => location.href = "/level/1"}>
-                  🎮 Spill Level 1
-                </button>
+             <div className="menu-grid">
+  <div
+    className="menu-card"
+    onClick={() => (location.href = "/level/1")}
+  >
+    <div className="menu-icon">🎮</div>
+    <div>
+      <h3>Level 1</h3>
+      <p>Høyt tempo – tjen poeng!</p>
+    </div>
+  </div>
 
-                <button onClick={() => location.href = "/quiz"}>
-                  📘 Klassisk Quiz
-                </button>
-              </div>
+  <div
+    className="menu-card"
+    onClick={() => (location.href = "/quiz")}
+  >
+    <div className="menu-icon">📘</div>
+    <div>
+      <h3>Klassisk Quiz</h3>
+      <p>Uten tidspress</p>
+    </div>
+  </div>
+</div>
+
             </div>
           }
         />
