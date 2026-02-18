@@ -5,59 +5,73 @@ type Props = {
   children: ReactNode;
   user: {
     email: string;
-    isAdmin?: boolean;
   };
-  onLogout: () => void;
+  isAdmin?: boolean;
+  onLogout?: () => void;
 };
 
-export default function AppShell({ children, user, onLogout }: Props) {
+export default function AppShell({
+  children,
+  user,
+  isAdmin,
+  onLogout,
+}: Props) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  function go(path: string) {
+    navigate(path);
+  }
+
   function active(path: string) {
-    return location.pathname === path ? "active" : "";
+    return location.pathname === path;
   }
 
   return (
     <div className="app-bg">
       {/* HEADER */}
       <header className="top-bar">
-        <div className="brand">Teori-app</div>
+        <div className="brand">TrafikkLæring</div>
         <div className="user">
           {user.email}
-          {user.isAdmin && <span className="admin-badge">ADMIN</span>}
+          {isAdmin && <span className="admin-badge">ADMIN</span>}
         </div>
       </header>
 
-      {/* CONTENT */}
+      {/* MAIN */}
       <main className="content">{children}</main>
 
-      {/* NAV */}
-      <nav className="bottom-nav">
-        <button className={active("/")} onClick={() => navigate("/")}>
-          Hjem
+      {/* FLOATING NAV */}
+      <nav className="floating-nav">
+        <button
+          className={`nav-pill ${active("/") ? "active" : ""}`}
+          onClick={() => go("/")}
+        >
+          🏠 Hjem
         </button>
-
-        <button className={active("/quiz")} onClick={() => navigate("/quiz")}>
-          Quiz
-        </button>
-
-        {user.isAdmin && (
-          <button
-            className={active("/admin")}
-            onClick={() => navigate("/admin")}
-          >
-            Admin
-          </button>
-        )}
 
         <button
+          className={`nav-pill ${active("/levels") ? "active" : ""}`}
+          onClick={() => go("/levels")}
+        >
+          🎮 Levels
+        </button>
+
+        <button
+          className={`nav-pill ${active("/quiz") ? "active" : ""}`}
+          onClick={() => go("/quiz")}
+        >
+          🧠 Quiz
+        </button>
+
+        <button
+          className="nav-pill logout"
           onClick={() => {
             localStorage.removeItem("token");
-            onLogout();
+            if (onLogout) onLogout();
           }}
         >
-          Logg ut
+          🚪 Logg ut
         </button>
       </nav>
     </div>
