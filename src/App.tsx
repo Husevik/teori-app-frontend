@@ -10,7 +10,6 @@ import QuizEditor from "./admin/QuizEditor";
 import EditQuiz from "./admin/EditQuiz";
 
 import StudentQuiz from "./student/StudentQuiz";
-import QuizResult from "./student/QuizResult";
 
 import Level1 from "./student/Level1";
 import LevelResult from "./student/LevelResult";
@@ -69,7 +68,6 @@ export default function App() {
         <Route path="/level/result" element={<LevelResult />} />
 
         <Route path="/quiz" element={<StudentQuiz />} />
-        <Route path="/quiz/result" element={<QuizResult />} />
 
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/quizzes" element={<QuizList />} />
