@@ -1,0 +1,69 @@
+.student-page-container {
+  max-width: 720px;
+  margin: 40px auto 0;
+  padding: 16px;
+  background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
+  border-radius: 18px;
+  box-shadow: 0 14px 36px rgba(47, 128, 237, 0.5);
+  color: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.student-main-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.student-menu-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 18px;
+  box-shadow: 0 14px 36px rgba(47, 128, 237, 0.5);
+  border: none;
+  padding: 24px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+
+.student-menu-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 18px 45px rgba(47, 128, 237, 0.7);
+}
+
+.student-menu-card:active {
+  transform: scale(0.95);
+  box-shadow: 0 10px 25px rgba(47, 128, 237, 0.4);
+}
+
+.student-menu-card:disabled,
+.student-menu-card[disabled] {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+
+.student-menu-card .menu-icon {
+  font-size: 48px !important;
+  margin-bottom: 8px;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+.student-menu-card h3 {
+  font-size: 24px;
+  margin: 0;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}

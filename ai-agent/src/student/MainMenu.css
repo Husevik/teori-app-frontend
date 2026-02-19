@@ -1,0 +1,48 @@
+@import '../App.css';
+
+.main-menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  padding: 32px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.main-menu-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  color: #3a1c71;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  border: none;
+}
+
+.main-menu-card .emoji {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.main-menu-card .label {
+  font-size: 1.25rem;
+}
+
+.main-menu-card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.main-menu-card:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

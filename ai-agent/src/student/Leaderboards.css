@@ -1,0 +1,37 @@
+@import '../App.css';
+
+.leaderboards-container {
+  max-width: 640px;
+  margin: 40px auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.leaderboards-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  font-size: 1rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leaderboards-table thead {
+  background: linear-gradient(135deg, #fbc7a4 0%, #f6d365 100%);
+  color: #7a3e1e;
+}
+
+.leaderboards-table th,
+.leaderboards-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.leaderboards-table tbody tr:nth-child(even) {
+  background-color: #fff7f0;
+}
+
+.leaderboards-table tbody tr:hover {
+  background-color: #ffe6cc;
+}

@@ -1,0 +1,88 @@
+.student-page-container {
+  max-width: 720px;
+  margin: 40px auto 0;
+  padding: 16px;
+  background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
+  border-radius: 18px;
+  box-shadow: 0 14px 36px rgba(47, 128, 237, 0.5);
+  color: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.student-play-container {
+  width: 100%;
+  color: white;
+}
+
+.student-levels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.student-level-card {
+  background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 18px;
+  box-shadow: 0 14px 36px rgba(47, 128, 237, 0.5);
+  border: none;
+  padding: 24px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+  font-size: 20px;
+}
+
+.student-level-card:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 18px 45px rgba(47, 128, 237, 0.7);
+}
+
+.student-level-card:active:not(:disabled) {
+  transform: scale(0.95);
+  box-shadow: 0 10px 25px rgba(47, 128, 237, 0.4);
+}
+
+.student-level-card:disabled {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+  background: #a3bffa;
+  color: #e0e7ff;
+}
+
+.student-back-button-container {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.student-back-button {
+  background: #2f80ed;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(47, 128, 237, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.student-back-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(47, 128, 237, 0.7);
+}
+
+.student-back-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px rgba(47, 128, 237, 0.4);
+}

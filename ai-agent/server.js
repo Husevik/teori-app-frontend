@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
@@ -13,6 +14,15 @@ app.use(bodyParser.json({ limit: "10mb" }));
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
+
+// 🔒 Resolve paths based on THIS FILE location (not cwd)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Project root is ONE LEVEL UP from ai-agent folder
+const PROJECT_ROOT = path.resolve(__dirname, "..");
+
+console.log("AI Agent project root:", PROJECT_ROOT);
 
 // Health check
 app.get("/health", (req, res) => {
@@ -28,9 +38,9 @@ app.post("/api/ai/edit", async (req, res) => {
       return res.status(400).json({ error: "instruction and files[] are required" });
     }
 
-    // Read files from disk
+    // Read files from REAL project root
     const fileContents = files.map(p => {
-      const abs = path.resolve(p);
+      const abs = path.resolve(PROJECT_ROOT, p);
       return {
         path: p,
         content: fs.existsSync(abs) ? fs.readFileSync(abs, "utf8") : ""
@@ -99,9 +109,9 @@ ${JSON.stringify(fileContents, null, 2)}
       return res.status(400).json({ error: "Invalid AI response format", raw: result });
     }
 
-    // Write files to disk
+    // Write files to REAL project root
     for (const file of result.files) {
-      const abs = path.resolve(file.path);
+      const abs = path.resolve(PROJECT_ROOT, file.path);
       fs.mkdirSync(path.dirname(abs), { recursive: true });
       fs.writeFileSync(abs, file.content, "utf8");
     }

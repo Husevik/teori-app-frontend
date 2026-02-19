@@ -1,0 +1,69 @@
+@import '../App.css';
+
+.profile-container {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 0 16px;
+  text-align: left;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.profile-form label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.profile-form input,
+.profile-form select {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline-offset: 2px;
+  outline-color: #7a3e1e;
+  transition: border-color 0.2s ease;
+}
+
+.profile-form input:focus,
+.profile-form select:focus {
+  border-color: #7a3e1e;
+}
+
+.profile-save-button {
+  width: 100%;
+  padding: 14px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #7a3e1e;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.profile-save-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 20px rgba(122, 62, 30, 0.4);
+}
+
+.profile-save-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 8px rgba(122, 62, 30, 0.3);
+}
+
+.save-confirmation {
+  margin-top: 8px;
+  color: #2a7a2a;
+  font-weight: 600;
+  font-size: 1rem;
+}

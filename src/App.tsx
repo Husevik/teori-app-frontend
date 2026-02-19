@@ -10,8 +10,12 @@ import QuizEditor from "./admin/QuizEditor";
 import EditQuiz from "./admin/EditQuiz";
 
 import StudentQuiz from "./student/StudentQuiz";
+import MainMenu from "./student/MainMenu";
+import Play from "./student/Play";
+import Practice from "./student/Practice";
+import Profile from "./student/Profile";
+import Leaderboards from "./student/Leaderboards";
 
-import Level1 from "./student/Level1";
 import LevelResult from "./student/LevelResult";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -45,41 +49,14 @@ export default function App() {
   return (
     <AppShell user={user} isAdmin={false}>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="card">
-              <h2>Velkommen 👋</h2>
+        <Route path="/" element={<MainMenu />} />
 
-             <div className="menu-grid">
-  <div
-    className="menu-card"
-    onClick={() => (location.href = "/level/1")}
-  >
-    <div className="menu-icon">🎮</div>
-    <div>
-      <h3>Level 1</h3>
-      <p>Høyt tempo – tjen poeng!</p>
-    </div>
-  </div>
+        <Route path="/play" element={<Play />} />
+        <Route path="/practice" element={<Practice />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/leaderboards" element={<Leaderboards />} />
 
-  <div
-    className="menu-card"
-    onClick={() => (location.href = "/quiz")}
-  >
-    <div className="menu-icon">📘</div>
-    <div>
-      <h3>Klassisk Quiz</h3>
-      <p>Uten tidspress</p>
-    </div>
-  </div>
-</div>
-
-            </div>
-          }
-        />
-
-        <Route path="/level/1" element={<Level1 />} />
+        <Route path="/level/:levelId" element={<StudentQuiz />} />
         <Route path="/level/result" element={<LevelResult />} />
 
         <Route path="/quiz" element={<StudentQuiz />} />
@@ -94,4 +71,3 @@ export default function App() {
     </AppShell>
   );
 }
-

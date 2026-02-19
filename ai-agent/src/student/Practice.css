@@ -1,0 +1,33 @@
+@import '../App.css';
+
+.practice-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.practice-start-button {
+  margin-top: 24px;
+  padding: 16px 32px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #7a3e1e;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  user-select: none;
+}
+
+.practice-start-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 20px rgba(122, 62, 30, 0.4);
+}
+
+.practice-start-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 8px rgba(122, 62, 30, 0.3);
+}
