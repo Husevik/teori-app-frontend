@@ -14,13 +14,13 @@ export default function Play() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="student-play-container">
-          <h2>Play Levels</h2>
+        <div className="card">
+          <h2 className="play-header">Play Levels</h2>
           <div className="student-levels-grid">
             {levels.map(({ id, label, enabled }) => (
               <button
                 key={id}
-                className="card student-level-card"
+                className="student-level-card"
                 onClick={() => enabled && navigate(`/level/${id}`)}
                 disabled={!enabled}
                 type="button"

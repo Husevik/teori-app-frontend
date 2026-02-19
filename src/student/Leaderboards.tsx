@@ -13,26 +13,24 @@ export default function Leaderboards() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="student-leaderboards-container">
+        <div className="card student-leaderboards-container">
           <h2>Leaderboards</h2>
-          <div className="card student-leaderboard-card">
-            <table className="student-leaderboard-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Score</th>
+          <table className="student-leaderboard-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MOCK_LEADERBOARD.map(({ name, score }, i) => (
+                <tr key={i}>
+                  <td>{name}</td>
+                  <td>{score}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {MOCK_LEADERBOARD.map(({ name, score }, i) => (
-                  <tr key={i}>
-                    <td>{name}</td>
-                    <td>{score}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

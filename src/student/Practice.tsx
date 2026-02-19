@@ -9,7 +9,7 @@ export default function Practice() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="student-practice-container">
+        <div className="card">
           <h2>Practice Quiz</h2>
           <StudentQuiz mode="practice" />
           <div className="student-back-button-container">

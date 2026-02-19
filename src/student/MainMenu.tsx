@@ -15,11 +15,11 @@ export default function MainMenu() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="student-main-menu">
+        <div className="card student-main-menu">
           {buttons.map(({ emoji, label, route }) => (
             <button
               key={route}
-              className="card student-menu-card"
+              className="student-menu-card"
               onClick={() => navigate(route)}
               type="button"
               aria-label={label}

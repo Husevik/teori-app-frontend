@@ -1,47 +1,62 @@
-.student-page-container {
-  max-width: 720px;
-  margin: 40px auto 0;
-  padding: 16px;
-  background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
-  border-radius: 18px;
-  box-shadow: 0 14px 36px rgba(47, 128, 237, 0.5);
-  color: white;
+.student-page {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  user-select: none;
+  align-items: flex-start;
+  background: transparent;
+  padding: 32px 16px;
 }
 
-.student-practice-container {
+.student-container {
   width: 100%;
+  max-width: 900px;
+}
+
+.card {
+  background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
+  border-radius: 16px;
+  padding: 24px 32px 32px;
+  box-shadow: 0 10px 28px rgba(47, 128, 237, 0.3);
   color: white;
+  display: flex;
+  flex-direction: column;
+  text-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+
+.card h2 {
+  margin: 0 0 16px 0;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(0,0,0,0.5);
 }
 
 .student-back-button-container {
-  margin-top: 24px;
+  margin-top: 32px;
   display: flex;
   justify-content: center;
 }
 
 .student-back-button {
-  background: #2f80ed;
+  background: rgba(255, 255, 255, 0.15);
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 12px 24px;
+  padding: 12px 28px;
   font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(47, 128, 237, 0.5);
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.4);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  text-shadow: 0 0 6px rgba(0,0,0,0.25);
 }
 
 .student-back-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(47, 128, 237, 0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.6);
 }
 
 .student-back-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 4px 12px rgba(47, 128, 237, 0.4);
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }

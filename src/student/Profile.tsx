@@ -25,9 +25,9 @@ export default function Profile() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="student-profile-container">
+        <div className="card student-profile-container">
           <h2>Profile</h2>
-          <div className="card student-profile-card">
+          <div className="student-profile-card">
             <label htmlFor="nickname">Nickname</label>
             <input
               id="nickname"
