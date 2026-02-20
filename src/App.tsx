@@ -18,7 +18,7 @@ import Leaderboards from "./student/Leaderboards";
 
 import LevelResult from "./student/LevelResult";
 
-import { LanguageProvider, useLanguage } from "./locales/LanguageContext";
+import { LanguageProvider } from "./locales/LanguageContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

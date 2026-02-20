@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Language = "no" | "en";
 
@@ -47,7 +47,6 @@ const translations: Record<Language, Record<string, string>> = {
     "Back to Menu Button": "Tilbake til meny",
     "Play": "Spill",
     "Next Question": "Neste spørsmål",
-    "Score": "Poeng",
     "Your Score": "Din poengsum",
     "Correct Answers": "Riktige svar",
     "Total Questions": "Totalt antall spørsmål"
@@ -90,7 +89,6 @@ const translations: Record<Language, Record<string, string>> = {
     "Back to Menu Button": "Back to Menu",
     "Play": "Play",
     "Next Question": "Next Question",
-    "Score": "Score",
     "Your Score": "Your Score",
     "Correct Answers": "Correct Answers",
     "Total Questions": "Total Questions"

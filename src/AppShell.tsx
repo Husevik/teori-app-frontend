@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useLanguage } from "./locales/LanguageContext";
 
 type Props = {
   children: ReactNode;
@@ -20,7 +18,6 @@ export default function AppShell({
 }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t, language, setLanguage } = useLanguage();
 
   function go(path: string) {
     navigate(path);
@@ -53,7 +50,7 @@ export default function AppShell({
           onClick={() => go("/")}
           type="button"
         >
-          🏠 {language === "no" ? "Hjem" : "Home"}
+          🏠 Hjem
         </button>
 
         <button
@@ -61,7 +58,7 @@ export default function AppShell({
           onClick={() => go("/levels")}
           type="button"
         >
-          🎮 {language === "no" ? "Nivåer" : "Levels"}
+          🎮 Nivåer
         </button>
 
         <button
@@ -69,7 +66,7 @@ export default function AppShell({
           onClick={() => go("/quiz")}
           type="button"
         >
-          🧠 {language === "no" ? "Quiz" : "Quiz"}
+          🧠 Quiz
         </button>
 
         <button
@@ -80,7 +77,7 @@ export default function AppShell({
           }}
           type="button"
         >
-          🚪 {language === "no" ? "Logg ut" : "Logout"}
+          🚪 Logg ut
         </button>
       </nav>
     </div>

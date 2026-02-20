@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import { useLanguage } from "../locales/LanguageContext";
 
 const LICENSE_TYPES = ["moped", "motorcycle", "car", "car+trailer", "boat"];
 
 export default function Profile() {
-  const { t, language } = useLanguage();
   const [nickname, setNickname] = useState("");
   const [license, setLicense] = useState("");
   const [saved, setSaved] = useState(false);
@@ -30,30 +28,30 @@ export default function Profile() {
     <div className="student-page">
       <div className="student-container">
         <div className="card student-profile-container" style={{ position: "relative", paddingBottom: "72px" }}>
-          <h2>{t("Profile")}</h2>
+          <h2>Profile</h2>
           <div className="student-profile-card">
-            <label htmlFor="nickname">{t("Nickname")}</label>
+            <label htmlFor="nickname">Nickname</label>
             <input
               id="nickname"
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder={t("Nickname")}
+              placeholder="Nickname"
               maxLength={30}
             />
 
-            <label htmlFor="license">{t("License Type")}</label>
+            <label htmlFor="license">License Type</label>
             <select
               id="license"
               value={license}
               onChange={(e) => setLicense(e.target.value)}
             >
               <option value="" disabled>
-                {t("Select license type")}
+                Select license type
               </option>
               {LICENSE_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {t(type)}
+                  {type}
                 </option>
               ))}
             </select>
@@ -64,10 +62,10 @@ export default function Profile() {
               disabled={nickname.trim() === "" || license === ""}
               type="button"
             >
-              {t("Save")}
+              Save
             </button>
 
-            {saved && <p className="student-save-message">{t("Profile saved!")}</p>}
+            {saved && <p className="student-save-message">Profile saved!</p>}
           </div>
 
           <div style={{ position: "absolute", bottom: 20, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
@@ -76,7 +74,7 @@ export default function Profile() {
               type="button"
               onClick={() => navigate("/")}
             >
-              {t("Back to Menu")}
+              Back to Menu
             </button>
           </div>
         </div>
