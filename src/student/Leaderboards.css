@@ -1,17 +1,3 @@
-.student-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: transparent;
-  padding: 32px 16px;
-}
-
-.student-container {
-  width: 100%;
-  max-width: 900px;
-}
-
 .card.student-leaderboards-container {
   background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
   border-radius: 16px;
@@ -67,4 +53,15 @@
 
 .student-leaderboard-table tbody tr:hover {
   background-color: rgba(219, 234, 254, 0.15);
+}
+
+@media (max-width: 480px) {
+  .student-leaderboard-table {
+    font-size: 18px;
+  }
+
+  .student-leaderboard-table th,
+  .student-leaderboard-table td {
+    padding: 14px 12px;
+  }
 }

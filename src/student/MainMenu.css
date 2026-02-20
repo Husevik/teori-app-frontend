@@ -1,17 +1,3 @@
-.student-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: transparent;
-  padding: 32px 16px;
-}
-
-.student-container {
-  width: 100%;
-  max-width: 900px;
-}
-
 .student-main-menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -72,4 +58,21 @@
   margin: 0;
   font-size: 22px;
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 480px) {
+  .student-main-menu {
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+  }
+
+  .student-menu-card {
+    padding: 24px 0;
+    font-size: 24px;
+  }
+
+  .student-menu-card .menu-icon {
+    font-size: 56px !important;
+    margin-bottom: 16px;
+  }
 }

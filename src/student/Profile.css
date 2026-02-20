@@ -1,17 +1,3 @@
-.student-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: transparent;
-  padding: 32px 16px;
-}
-
-.student-container {
-  width: 100%;
-  max-width: 900px;
-}
-
 .card.student-profile-container {
   background: linear-gradient(135deg, #2f80ed 0%, #56a0f8 100%);
   border-radius: 16px;
@@ -105,4 +91,17 @@
   font-weight: 600;
   margin-top: 8px;
   text-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 480px) {
+  .student-primary-button {
+    font-size: 18px;
+    padding: 14px;
+  }
+
+  .student-profile-card input,
+  .student-profile-card select {
+    font-size: 18px;
+    padding: 14px;
+  }
 }

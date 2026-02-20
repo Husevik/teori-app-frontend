@@ -31,7 +31,13 @@ export default function Play() {
             ))}
           </div>
           <div className="student-back-button-container">
-            <button className="student-back-button" onClick={() => navigate("/")}>⬅ Back to Menu</button>
+            <button
+              className="student-back-button"
+              onClick={() => navigate("/")}
+              type="button"
+            >
+              ⬅ Back to Menu
+            </button>
           </div>
         </div>
       </div>

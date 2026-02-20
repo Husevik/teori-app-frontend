@@ -15,13 +15,15 @@ export default function MainMenu() {
     <div className="student-page">
       <div className="student-container">
         <div className="card student-main-menu">
-          <div style={{
-            fontWeight: "bold",
-            color: "#d00",
-            textAlign: "center",
-            marginBottom: "0.75rem",
-            userSelect: "none"
-          }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              color: "#d00",
+              textAlign: "center",
+              marginBottom: "1rem",
+              userSelect: "none",
+            }}
+          >
             DEPLOY TEST ACTIVE
           </div>
           {buttons.map(({ emoji, label, route }) => (
