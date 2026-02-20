@@ -14,7 +14,8 @@ export default function MainMenu() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="card student-main-menu">
+        {/* Removed card wrapper to remove dark blue background panel */}
+        <div className="student-main-menu">
           {buttons.map(({ emoji, label, route }) => (
             <button
               key={route}
