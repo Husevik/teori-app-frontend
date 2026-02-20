@@ -77,3 +77,33 @@
 .shake {
   animation: shake 0.3s ease forwards;
 }
+
+.confetti-container {
+  pointer-events: none;
+  overflow: visible;
+  z-index: 9999;
+}
+
+.confetti-particle {
+  position: fixed;
+  border-radius: 3px;
+  opacity: 0.9;
+  animation: confetti-burst 1.5s forwards ease-out;
+  /* Start transform at 0,0 and animate to velocity offset */
+  transform: translate(0, 0) rotate(0deg);
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0), var(--dy, 0)) rotate(360deg);
+  }
+}
+
+.confetti-active .confetti-particle {
+  animation-play-state: running;
+}

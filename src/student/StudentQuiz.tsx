@@ -305,29 +305,54 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   const CONFETTI_COUNT = 20;
   const CONFETTI_COLORS = ["#1e40af", "#2563eb", "#a5c9ff", "#d0e6ff"];
 
-  // Create confetti particles
-  function createConfetti(originX: number, originY: number) {
+  // Create confetti particles around the button perimeter
+  function createConfettiAroundButton(rect: DOMRect) {
     if (!confettiRef.current) return;
     confettiRef.current.innerHTML = "";
+
+    // Center of button
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Radius for spawning confetti around button (slightly outside button edges)
+    const radiusX = rect.width / 2 + 10; // 10px outside horizontal edges
+    const radiusY = rect.height / 2 + 10; // 10px outside vertical edges
 
     for (let i = 0; i < CONFETTI_COUNT; i++) {
       const particle = document.createElement("div");
       particle.className = "confetti-particle";
       particle.style.backgroundColor = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
-      // Position near origin with some random offset
-      const offsetX = (Math.random() - 0.5) * 40; // +/- 20px
-      const offsetY = (Math.random() - 0.5) * 20; // +/- 10px
-      particle.style.left = `${originX + offsetX}px`;
-      particle.style.top = `${originY + offsetY}px`;
+
+      // Distribute particles evenly around ellipse perimeter
+      const angle = (i / CONFETTI_COUNT) * 2 * Math.PI;
+
+      // Start position on ellipse perimeter
+      const startX = centerX + radiusX * Math.cos(angle);
+      const startY = centerY + radiusY * Math.sin(angle);
+
+      // Velocity vector for animation: outward from start position
+      // We'll store velocity as CSS variables for animation
+      // Velocity magnitude random between 20 and 60
+      const velocityMagnitude = Math.random() * 40 + 20;
+      const velocityX = Math.cos(angle) * velocityMagnitude;
+      const velocityY = Math.sin(angle) * velocityMagnitude;
+
+      particle.style.left = `${startX}px`;
+      particle.style.top = `${startY}px`;
       particle.style.width = particle.style.height = `${Math.random() * 6 + 4}px`;
+
+      // Set CSS variables for animation
+      particle.style.setProperty("--dx", `${velocityX.toFixed(2)}px`);
+      particle.style.setProperty("--dy", `${velocityY.toFixed(2)}px`);
+
       confettiRef.current.appendChild(particle);
     }
   }
 
   // Trigger confetti animation
-  function triggerConfetti(originX: number, originY: number) {
+  function triggerConfettiAroundButton(rect: DOMRect) {
     if (!confettiRef.current) return;
-    createConfetti(originX, originY);
+    createConfettiAroundButton(rect);
     confettiRef.current.classList.add("confetti-active");
 
     setTimeout(() => {
@@ -348,9 +373,7 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
       // Get button position for confetti origin
       const button = event.currentTarget;
       const rect = button.getBoundingClientRect();
-      const originX = rect.left + rect.width / 2 + window.scrollX;
-      const originY = rect.top + rect.height / 2 + window.scrollY;
-      triggerConfetti(originX, originY);
+      triggerConfettiAroundButton(rect);
     }
 
     setTimeout(() => {
@@ -378,38 +401,46 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   }
 
   return (
-    <div className="card quiz-card" style={{ position: "relative" }}>
-      <h2>{quizTitle}</h2>
+    <>
+      <div className="card quiz-card">
+        <h2>{quizTitle}</h2>
 
-      <div className="question">
-        <h3>{question.text}</h3>
+        <div className="question">
+          <h3>{question.text}</h3>
+        </div>
+
+        <div className="answers">
+          {question.answers.map((answer, index) => {
+            let className = "answer-btn";
+
+            if (selected === index) {
+              className += feedback === "correct" ? " correct pop" : " wrong shake";
+            } else if (feedback && index === question.correctIndex) {
+              className += " correct";
+            }
+
+            return (
+              <button
+                key={index}
+                className={className}
+                onClick={(e) => handleAnswer(index, e)}
+                disabled={selected !== null}
+                type="button"
+              >
+                {answer}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="answers">
-        {question.answers.map((answer, index) => {
-          let className = "answer-btn";
-
-          if (selected === index) {
-            className += feedback === "correct" ? " correct pop" : " wrong shake";
-          } else if (feedback && index === question.correctIndex) {
-            className += " correct";
-          }
-
-          return (
-            <button
-              key={index}
-              className={className}
-              onClick={(e) => handleAnswer(index, e)}
-              disabled={selected !== null}
-              type="button"
-            >
-              {answer}
-            </button>
-          );
-        })}
-      </div>
-
-      <div ref={confettiRef} className="confetti-container" aria-hidden="true" />
-    </div>
+      {/* Confetti container appended to body, fixed position */}
+      <div
+        ref={confettiRef}
+        className="confetti-container"
+        aria-hidden="true"
+        style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 9999, overflow: "visible" }}
+      />
+    </>
   );
 }
