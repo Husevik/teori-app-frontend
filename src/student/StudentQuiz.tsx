@@ -303,10 +303,10 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
 
   // Confetti particle count and colors
   const CONFETTI_COUNT = 20;
-  const CONFETTI_COLORS = ["#2f80ed", "#56a0f8", "#a5d8ff", "#d0e6ff"];
+  const CONFETTI_COLORS = ["#1e40af", "#2563eb", "#a5c9ff", "#d0e6ff"];
 
   // Create confetti particles
-  function createConfetti() {
+  function createConfetti(originX: number, originY: number) {
     if (!confettiRef.current) return;
     confettiRef.current.innerHTML = "";
 
@@ -314,17 +314,20 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
       const particle = document.createElement("div");
       particle.className = "confetti-particle";
       particle.style.backgroundColor = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
-      particle.style.left = `${Math.random() * 100}%`;
-      particle.style.animationDelay = `${Math.random() * 0.5}s`;
+      // Position near origin with some random offset
+      const offsetX = (Math.random() - 0.5) * 40; // +/- 20px
+      const offsetY = (Math.random() - 0.5) * 20; // +/- 10px
+      particle.style.left = `${originX + offsetX}px`;
+      particle.style.top = `${originY + offsetY}px`;
       particle.style.width = particle.style.height = `${Math.random() * 6 + 4}px`;
       confettiRef.current.appendChild(particle);
     }
   }
 
   // Trigger confetti animation
-  function triggerConfetti() {
+  function triggerConfetti(originX: number, originY: number) {
     if (!confettiRef.current) return;
-    createConfetti();
+    createConfetti(originX, originY);
     confettiRef.current.classList.add("confetti-active");
 
     setTimeout(() => {
@@ -335,14 +338,19 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
     }, 1500);
   }
 
-  function handleAnswer(index: number) {
+  function handleAnswer(index: number, event: React.MouseEvent<HTMLButtonElement>) {
     if (selected !== null) return; // Prevent multiple clicks
     setSelected(index);
     const isCorrect = index === question.correctIndex;
     setFeedback(isCorrect ? "correct" : "wrong");
 
     if (isCorrect) {
-      triggerConfetti();
+      // Get button position for confetti origin
+      const button = event.currentTarget;
+      const rect = button.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2 + window.scrollX;
+      const originY = rect.top + rect.height / 2 + window.scrollY;
+      triggerConfetti(originX, originY);
     }
 
     setTimeout(() => {
@@ -370,7 +378,7 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   }
 
   return (
-    <div className="card quiz-card">
+    <div className="card quiz-card" style={{ position: "relative" }}>
       <h2>{quizTitle}</h2>
 
       <div className="question">
@@ -391,7 +399,7 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
             <button
               key={index}
               className={className}
-              onClick={() => handleAnswer(index)}
+              onClick={(e) => handleAnswer(index, e)}
               disabled={selected !== null}
               type="button"
             >
