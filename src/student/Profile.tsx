@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Profile.css";
 
 const LICENSE_TYPES = ["moped", "motorcycle", "car", "car+trailer", "boat"];

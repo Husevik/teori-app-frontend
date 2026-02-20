@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
 
 // This file is replaced by unified StudentQuiz with route param

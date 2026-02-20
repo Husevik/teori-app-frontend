@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import React from "react";
 import "./Play.css";
 
 export default function Play() {

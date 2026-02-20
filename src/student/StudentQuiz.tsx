@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "./StudentQuiz.css";
 
 // Practice questions
@@ -67,7 +67,7 @@ const PRACTICE_QUESTIONS = [
 ];
 
 // Level questions
-const LEVEL_QUESTIONS = {
+const LEVEL_QUESTIONS: Record<number, Question[]> = {
   1: [
     {
       id: "q1",
@@ -270,8 +270,7 @@ interface StudentQuizProps {
 
 export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   const navigate = useNavigate();
-  const params = useParams<{ levelId: string }>();
-  const location = useLocation();
+  const params = useParams<{ levelId?: string }>();
 
   // Determine question set
   let questions: Question[] = [];
@@ -282,12 +281,12 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   } else if (params.levelId) {
     const lvl = Number(params.levelId);
     if (lvl >= 1 && lvl <= 3) {
-      questions = LEVEL_QUESTIONS[lvl] || [];
+      questions = LEVEL_QUESTIONS[lvl] ?? [];
       quizTitle = `Level ${lvl} Quiz`;
     }
   } else if (level) {
     if (level >= 1 && level <= 3) {
-      questions = LEVEL_QUESTIONS[level] || [];
+      questions = LEVEL_QUESTIONS[level] ?? [];
       quizTitle = `Level ${level} Quiz`;
     }
   } else {
@@ -353,7 +352,7 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
         setCurrent(current + 1);
       } else {
         // Calculate score
-        const score = questions.reduce((acc, q, i) => {
+        const score = questions.reduce((acc, _q, i) => {
           if (i < current) return acc + 1;
           if (i === current && isCorrect) return acc + 1;
           return acc;

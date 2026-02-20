@@ -1,4 +1,3 @@
-import React from "react";
 import "./Leaderboards.css";
 
 const MOCK_LEADERBOARD = [
