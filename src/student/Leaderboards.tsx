@@ -1,4 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import "./Leaderboards.css";
+import { useLanguage } from "../locales/LanguageContext";
 
 const MOCK_LEADERBOARD = [
   { name: "Alice", score: 1200 },
@@ -9,16 +11,19 @@ const MOCK_LEADERBOARD = [
 ];
 
 export default function Leaderboards() {
+  const navigate = useNavigate();
+  const { t, language } = useLanguage();
+
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="card student-leaderboards-container">
-          <h2>Leaderboards</h2>
+        <div className="card student-leaderboards-container" style={{ position: "relative", paddingBottom: "72px" }}>
+          <h2>{t("Leaderboards")}</h2>
           <table className="student-leaderboard-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Score</th>
+                <th>{t("Name")}</th>
+                <th>{t("Score")}</th>
               </tr>
             </thead>
             <tbody>
@@ -30,6 +35,16 @@ export default function Leaderboards() {
               ))}
             </tbody>
           </table>
+
+          <div style={{ position: "absolute", bottom: 20, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+            <button
+              className="student-primary-button"
+              type="button"
+              onClick={() => navigate("/")}
+            >
+              {t("Back to Menu")}
+            </button>
+          </div>
         </div>
       </div>
     </div>

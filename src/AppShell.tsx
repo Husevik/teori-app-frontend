@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLanguage } from "./locales/LanguageContext";
 
 type Props = {
   children: ReactNode;
@@ -18,6 +20,7 @@ export default function AppShell({
 }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, language, setLanguage } = useLanguage();
 
   function go(path: string) {
     navigate(path);
@@ -30,7 +33,7 @@ export default function AppShell({
   return (
     <div className="app-bg">
       {/* HEADER */}
-      <header className="top-bar">
+      <header className="top-bar blue-gradient">
         <div className="brand">TrafikkLæring</div>
         <div className="user">
           {user.email}
@@ -39,29 +42,34 @@ export default function AppShell({
       </header>
 
       {/* MAIN */}
-      <main className="content">{children}</main>
+      <main className="content">
+        {children}
+      </main>
 
       {/* FLOATING NAV */}
       <nav className="floating-nav">
         <button
           className={`nav-pill ${active("/") ? "active" : ""}`}
           onClick={() => go("/")}
+          type="button"
         >
-          🏠 Hjem
+          🏠 {language === "no" ? "Hjem" : "Home"}
         </button>
 
         <button
           className={`nav-pill ${active("/levels") ? "active" : ""}`}
           onClick={() => go("/levels")}
+          type="button"
         >
-          🎮 Levels
+          🎮 {language === "no" ? "Nivåer" : "Levels"}
         </button>
 
         <button
           className={`nav-pill ${active("/quiz") ? "active" : ""}`}
           onClick={() => go("/quiz")}
+          type="button"
         >
-          🧠 Quiz
+          🧠 {language === "no" ? "Quiz" : "Quiz"}
         </button>
 
         <button
@@ -70,8 +78,9 @@ export default function AppShell({
             localStorage.removeItem("token");
             if (onLogout) onLogout();
           }}
+          type="button"
         >
-          🚪 Logg ut
+          🚪 {language === "no" ? "Logg ut" : "Logout"}
         </button>
       </nav>
     </div>

@@ -55,6 +55,30 @@
   background-color: rgba(219, 234, 254, 0.15);
 }
 
+.student-primary-button {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(30, 64, 175, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  text-shadow: 0 0 8px rgba(0,0,0,0.35);
+}
+
+.student-primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(30, 64, 175, 0.8);
+}
+
+.student-primary-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.5);
+}
+
 @media (max-width: 480px) {
   .student-leaderboard-table {
     font-size: 18px;

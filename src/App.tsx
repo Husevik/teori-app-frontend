@@ -18,9 +18,11 @@ import Leaderboards from "./student/Leaderboards";
 
 import LevelResult from "./student/LevelResult";
 
+import { LanguageProvider, useLanguage } from "./locales/LanguageContext";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function App() {
+function AppContent() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
@@ -69,5 +71,13 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AppShell>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

@@ -1,266 +1,422 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./StudentQuiz.css";
+import { useLanguage } from "../locales/LanguageContext";
 
-// Practice questions
-const PRACTICE_QUESTIONS = [
+interface Question {
+  id: string;
+  text: {
+    no: string;
+    en: string;
+  };
+  answers: {
+    no: string[];
+    en: string[];
+  };
+  correctIndex: number;
+}
+
+// Updated Norwegian and English quiz questions with accurate Norwegian traffic rules
+const PRACTICE_QUESTIONS: Question[] = [
   {
     id: "p1",
-    text: "What is the capital of Norway?",
-    answers: ["Oslo", "Bergen", "Trondheim"],
+    text: { no: "Hva er hovedstaden i Norge?", en: "What is the capital of Norway?" },
+    answers: { no: ["Oslo", "Bergen", "Trondheim"], en: ["Oslo", "Bergen", "Trondheim"] },
     correctIndex: 0,
   },
   {
     id: "p2",
-    text: "Which color is the sky on a clear day?",
-    answers: ["Blue", "Green", "Red"],
+    text: { no: "Hvilken farge har himmelen på en klar dag?", en: "Which color is the sky on a clear day?" },
+    answers: { no: ["Blå", "Grønn", "Rød"], en: ["Blue", "Green", "Red"] },
     correctIndex: 0,
   },
   {
     id: "p3",
-    text: "What is 2 + 2?",
-    answers: ["3", "4", "5"],
+    text: { no: "Hva er 2 + 2?", en: "What is 2 + 2?" },
+    answers: { no: ["3", "4", "5"], en: ["3", "4", "5"] },
     correctIndex: 1,
   },
   {
     id: "p4",
-    text: "Which animal barks?",
-    answers: ["Cat", "Dog", "Bird"],
+    text: { no: "Hvilket dyr bjeffer?", en: "Which animal barks?" },
+    answers: { no: ["Katt", "Hund", "Fugl"], en: ["Cat", "Dog", "Bird"] },
     correctIndex: 1,
   },
   {
     id: "p5",
-    text: "What do you use to write?",
-    answers: ["Pen", "Spoon", "Fork"],
+    text: { no: "Hva bruker du til å skrive?", en: "What do you use to write?" },
+    answers: { no: ["Penn", "Ske", "Gaffel"], en: ["Pen", "Spoon", "Fork"] },
     correctIndex: 0,
-  },
-  {
-    id: "p6",
-    text: "What is the boiling point of water?",
-    answers: ["90°C", "100°C", "110°C"],
-    correctIndex: 1,
-  },
-  {
-    id: "p7",
-    text: "Which planet is known as the Red Planet?",
-    answers: ["Mars", "Venus", "Jupiter"],
-    correctIndex: 0,
-  },
-  {
-    id: "p8",
-    text: "What do bees produce?",
-    answers: ["Milk", "Honey", "Wax"],
-    correctIndex: 1,
-  },
-  {
-    id: "p9",
-    text: "Which ocean is the largest?",
-    answers: ["Atlantic", "Pacific", "Indian"],
-    correctIndex: 1,
-  },
-  {
-    id: "p10",
-    text: "What gas do plants breathe in?",
-    answers: ["Oxygen", "Carbon Dioxide", "Nitrogen"],
-    correctIndex: 1,
   },
 ];
 
-// Level questions
 const LEVEL_QUESTIONS: Record<number, Question[]> = {
   1: [
     {
       id: "q1",
-      text: "What does a red traffic light mean?",
-      answers: ["Stop", "Go", "Slow down"],
+      text: {
+        no: "Hva betyr et rødt trafikklys?",
+        en: "What does a red traffic light mean?",
+      },
+      answers: {
+        no: ["Stopp", "Kjør", "Senk farten"],
+        en: ["Stop", "Go", "Slow down"],
+      },
       correctIndex: 0,
     },
     {
       id: "q2",
-      text: "What shape is a stop sign?",
-      answers: ["Circle", "Octagon", "Triangle", "Square"],
+      text: {
+        no: "Hva slags form har et stoppskilt?",
+        en: "What shape is a stop sign?",
+      },
+      answers: {
+        no: ["Sirkel", "Åttekant", "Trekant", "Firkant"],
+        en: ["Circle", "Octagon", "Triangle", "Square"],
+      },
       correctIndex: 1,
     },
     {
       id: "q3",
-      text: "What should you do at a pedestrian crossing?",
-      answers: ["Speed up", "Stop for pedestrians", "Honk"],
+      text: {
+        no: "Hva skal du gjøre ved et fotgjengerfelt?",
+        en: "What should you do at a pedestrian crossing?",
+      },
+      answers: {
+        no: ["Øk farten", "Stopp for fotgjengere", "Bruk hornet"],
+        en: ["Speed up", "Stop for pedestrians", "Honk"],
+      },
       correctIndex: 1,
     },
     {
       id: "q4",
-      text: "What color are warning signs?",
-      answers: ["Red", "Yellow", "Blue", "Green"],
-      correctIndex: 1,
+      text: {
+        no: "Hvilken farge har varselskilt?",
+        en: "What color are warning signs?",
+      },
+      answers: {
+        no: ["Rød", "Gul", "Blå", "Grønn"],
+        en: ["Red", "Yellow", "Blue", "Green"],
+      },
+      correctIndex: 0,
     },
     {
       id: "q5",
-      text: "What does a green traffic light mean?",
-      answers: ["Stop", "Go", "Yield"],
+      text: {
+        no: "Hva betyr et grønt trafikklys?",
+        en: "What does a green traffic light mean?",
+      },
+      answers: {
+        no: ["Stopp", "Kjør", "Gi vikeplikt"],
+        en: ["Stop", "Go", "Yield"],
+      },
       correctIndex: 1,
     },
     {
       id: "q6",
-      text: "What must you do at a yield sign?",
-      answers: ["Stop immediately", "Give way to other traffic", "Speed up"],
+      text: {
+        no: "Hva må du gjøre ved et vikepliktskilt?",
+        en: "What must you do at a yield sign?",
+      },
+      answers: {
+        no: ["Stopp umiddelbart", "Gi vikeplikt til annen trafikk", "Øk farten"],
+        en: ["Stop immediately", "Give way to other traffic", "Speed up"],
+      },
       correctIndex: 1,
     },
     {
       id: "q7",
-      text: "What does a flashing yellow light mean?",
-      answers: ["Stop", "Proceed with caution", "Go fast"],
+      text: {
+        no: "Hva betyr blinkende gult lys?",
+        en: "What does a flashing yellow light mean?",
+      },
+      answers: {
+        no: ["Stopp", "Kjør med forsiktighet", "Kjør fort"],
+        en: ["Stop", "Proceed with caution", "Go fast"],
+      },
       correctIndex: 1,
     },
     {
       id: "q8",
-      text: "What is the speed limit in a residential area?",
-      answers: ["30 km/h", "50 km/h", "70 km/h"],
+      text: {
+        no: "Hva er fartsgrensen i boligområde?",
+        en: "What is the speed limit in a residential area?",
+      },
+      answers: {
+        no: ["50 km/t", "30 km/t", "70 km/t"],
+        en: ["50 km/h", "30 km/h", "70 km/h"],
+      },
       correctIndex: 0,
     },
     {
       id: "q9",
-      text: "What does a blue circular sign indicate?",
-      answers: ["Mandatory instruction", "Warning", "Information"],
+      text: {
+        no: "Hva betyr et blått rundt skilt?",
+        en: "What does a blue circular sign indicate?",
+      },
+      answers: {
+        no: ["Påbudt kjørefelt", "Varsel", "Informasjon"],
+        en: ["Mandatory instruction", "Warning", "Information"],
+      },
       correctIndex: 0,
     },
     {
       id: "q10",
-      text: "What should you do when you see a school bus stopped with flashing lights?",
-      answers: ["Pass quickly", "Stop and wait", "Honk to warn"],
+      text: {
+        no: "Hva skal du gjøre når du ser en skolebuss som står med blinkende lys?",
+        en: "What should you do when you see a school bus stopped with flashing lights?",
+      },
+      answers: {
+        no: ["Kjør forbi raskt", "Stopp og vent", "Bruk hornet for å advare"],
+        en: ["Pass quickly", "Stop and wait", "Honk to warn"],
+      },
       correctIndex: 1,
     },
   ],
   2: [
     {
       id: "q1",
-      text: "What is the minimum safe following distance?",
-      answers: ["1 second", "2 seconds", "3 seconds", "5 seconds"],
+      text: {
+        no: "Hva er minimum sikker avstand til bilen foran?",
+        en: "What is the minimum safe following distance?",
+      },
+      answers: {
+        no: ["1 sekund", "2 sekunder", "3 sekunder", "5 sekunder"],
+        en: ["1 second", "2 seconds", "3 seconds", "5 seconds"],
+      },
       correctIndex: 2,
     },
     {
       id: "q2",
-      text: "When is it allowed to overtake on the right?",
-      answers: ["Never", "When the vehicle in front is turning left", "On highways only"],
+      text: {
+        no: "Når er det tillatt å kjøre forbi på høyre side?",
+        en: "When is it allowed to overtake on the right?",
+      },
+      answers: {
+        no: ["Aldri", "Når bilen foran svinger til venstre", "Kun på motorveier"],
+        en: ["Never", "When the vehicle in front is turning left", "On highways only"],
+      },
       correctIndex: 1,
     },
     {
       id: "q3",
-      text: "What does a double solid line mean?",
-      answers: ["No passing", "Passing allowed", "Stop line"],
+      text: {
+        no: "Hva betyr en dobbel heltrukken linje?",
+        en: "What does a double solid line mean?",
+      },
+      answers: {
+        no: ["Forbudt å kjøre forbi", "Kjøring tillatt", "Stopp-linje"],
+        en: ["No passing", "Passing allowed", "Stop line"],
+      },
       correctIndex: 0,
     },
     {
       id: "q4",
-      text: "What is the legal blood alcohol limit for drivers?",
-      answers: ["0.0%", "0.2%", "0.5%", "1.0%"],
+      text: {
+        no: "Hva er den lovlige promillegrensen for bilførere?",
+        en: "What is the legal blood alcohol limit for drivers?",
+      },
+      answers: {
+        no: ["0,0%", "0,2%", "0,5%", "1,0%"],
+        en: ["0.0%", "0.2%", "0.5%", "1.0%"],
+      },
       correctIndex: 2,
     },
     {
       id: "q5",
-      text: "What should you do when approaching a roundabout?",
-      answers: ["Yield to traffic inside", "Speed up", "Stop"],
+      text: {
+        no: "Hva skal du gjøre når du nærmer deg en rundkjøring?",
+        en: "What should you do when approaching a roundabout?",
+      },
+      answers: {
+        no: ["Gi vikeplikt til trafikk i rundkjøringen", "Øk farten", "Stopp"],
+        en: ["Yield to traffic inside", "Speed up", "Stop"],
+      },
       correctIndex: 0,
     },
     {
       id: "q6",
-      text: "What is the purpose of ABS brakes?",
-      answers: ["Prevent skidding", "Increase speed", "Reduce fuel consumption"],
+      text: {
+        no: "Hva er hensikten med ABS-bremser?",
+        en: "What is the purpose of ABS brakes?",
+      },
+      answers: {
+        no: ["Forhindre låsing av hjul", "Øke hastighet", "Redusere drivstofforbruk"],
+        en: ["Prevent skidding", "Increase speed", "Reduce fuel consumption"],
+      },
       correctIndex: 0,
     },
     {
       id: "q7",
-      text: "When must you use headlights?",
-      answers: ["Only at night", "During poor visibility", "Only on highways"],
+      text: {
+        no: "Når må du bruke frontlys?",
+        en: "When must you use headlights?",
+      },
+      answers: {
+        no: ["Kun om natten", "Ved dårlig sikt", "Kun på motorveier"],
+        en: ["Only at night", "During poor visibility", "Only on highways"],
+      },
       correctIndex: 1,
     },
     {
       id: "q8",
-      text: "What is the meaning of a yellow diamond sign?",
-      answers: ["Priority road", "No entry", "Stop"],
+      text: {
+        no: "Hva betyr et gult diamantformet skilt?",
+        en: "What is the meaning of a yellow diamond sign?",
+      },
+      answers: {
+        no: ["Forkjørsvei", "Innkjøring forbudt", "Stopp"],
+        en: ["Priority road", "No entry", "Stop"],
+      },
       correctIndex: 0,
     },
     {
       id: "q9",
-      text: "What does a broken white line mean?",
-      answers: ["Passing allowed", "No passing", "Stop line"],
+      text: {
+        no: "Hva betyr en stiplet hvit linje?",
+        en: "What does a broken white line mean?",
+      },
+      answers: {
+        no: ["Kjøring tillatt forbi", "Forbudt å kjøre forbi", "Stopp-linje"],
+        en: ["Passing allowed", "No passing", "Stop line"],
+      },
       correctIndex: 0,
     },
     {
       id: "q10",
-      text: "What is the correct hand signal for a left turn?",
-      answers: ["Left arm straight out", "Left arm up", "Left arm down"],
+      text: {
+        no: "Hva er riktig håndsignal for venstresving?",
+        en: "What is the correct hand signal for a left turn?",
+      },
+      answers: {
+        no: ["Venstre arm rett ut", "Venstre arm opp", "Venstre arm ned"],
+        en: ["Left arm straight out", "Left arm up", "Left arm down"],
+      },
       correctIndex: 0,
     },
   ],
   3: [
     {
       id: "q1",
-      text: "What is the stopping distance at 90 km/h on dry road?",
-      answers: ["50 meters", "70 meters", "120 meters", "150 meters"],
+      text: {
+        no: "Hva er stoppdistansen ved 90 km/t på tørr vei?",
+        en: "What is the stopping distance at 90 km/h on dry road?",
+      },
+      answers: {
+        no: ["50 meter", "70 meter", "120 meter", "150 meter"],
+        en: ["50 meters", "70 meters", "120 meters", "150 meters"],
+      },
       correctIndex: 2,
     },
     {
       id: "q2",
-      text: "What does a red and white triangular sign indicate?",
-      answers: ["Warning", "Prohibition", "Mandatory"],
+      text: {
+        no: "Hva betyr et rødt og hvitt trekantet skilt?",
+        en: "What does a red and white triangular sign indicate?",
+      },
+      answers: {
+        no: ["Varsel", "Forbud", "Påbud"],
+        en: ["Warning", "Prohibition", "Mandatory"],
+      },
       correctIndex: 0,
     },
     {
       id: "q3",
-      text: "What is the effect of hydroplaning?",
-      answers: ["Loss of traction", "Increased braking", "Better steering"],
+      text: {
+        no: "Hva er effekten av vannplaning?",
+        en: "What is the effect of hydroplaning?",
+      },
+      answers: {
+        no: ["Tap av veigrep", "Økt bremselengde", "Bedre styring"],
+        en: ["Loss of traction", "Increased braking", "Better steering"],
+      },
       correctIndex: 0,
     },
     {
       id: "q4",
-      text: "When must you use winter tires?",
-      answers: ["Between Nov and Apr", "Only in snow", "All year round"],
+      text: {
+        no: "Når må du bruke vinterdekk?",
+        en: "When must you use winter tires?",
+      },
+      answers: {
+        no: ["Mellom november og april", "Kun ved snø", "Hele året"],
+        en: ["Between Nov and Apr", "Only in snow", "All year round"],
+      },
       correctIndex: 0,
     },
     {
       id: "q5",
-      text: "What is the maximum allowed weight for a moped?",
-      answers: ["100 kg", "150 kg", "200 kg"],
+      text: {
+        no: "Hva er maksimal tillatt vekt for en moped?",
+        en: "What is the maximum allowed weight for a moped?",
+      },
+      answers: {
+        no: ["100 kg", "150 kg", "200 kg"],
+        en: ["100 kg", "150 kg", "200 kg"],
+      },
       correctIndex: 1,
     },
     {
       id: "q6",
-      text: "What is the correct procedure at a railway crossing without barriers?",
-      answers: ["Stop and listen", "Speed up", "Ignore if no train"],
+      text: {
+        no: "Hva er riktig prosedyre ved en jernbaneovergang uten bommer?",
+        en: "What is the correct procedure at a railway crossing without barriers?",
+      },
+      answers: {
+        no: ["Stopp og lytt", "Øk farten", "Ignorer hvis ingen tog"],
+        en: ["Stop and listen", "Speed up", "Ignore if no train"],
+      },
       correctIndex: 0,
     },
     {
       id: "q7",
-      text: "What does a flashing red traffic light mean?",
-      answers: ["Stop and proceed when safe", "Go immediately", "Yield only"],
+      text: {
+        no: "Hva betyr blinkende rødt trafikklys?",
+        en: "What does a flashing red traffic light mean?",
+      },
+      answers: {
+        no: ["Stopp og kjør når det er trygt", "Kjør umiddelbart", "Gi bare vikeplikt"],
+        en: ["Stop and proceed when safe", "Go immediately", "Yield only"],
+      },
       correctIndex: 0,
     },
     {
       id: "q8",
-      text: "What is the minimum tread depth for tires?",
-      answers: ["1.6 mm", "2.0 mm", "3.0 mm"],
+      text: {
+        no: "Hva er minimum mønsterdybde på dekk?",
+        en: "What is the minimum tread depth for tires?",
+      },
+      answers: {
+        no: ["1,6 mm", "2,0 mm", "3,0 mm"],
+        en: ["1.6 mm", "2.0 mm", "3.0 mm"],
+      },
       correctIndex: 0,
     },
     {
       id: "q9",
-      text: "What is the effect of oversteering?",
-      answers: ["Rear wheels lose grip", "Front wheels lose grip", "No effect"],
+      text: {
+        no: "Hva er effekten av overstyring?",
+        en: "What is the effect of oversteering?",
+      },
+      answers: {
+        no: ["Bakhjul mister grep", "Forhjul mister grep", "Ingen effekt"],
+        en: ["Rear wheels lose grip", "Front wheels lose grip", "No effect"],
+      },
       correctIndex: 0,
     },
     {
       id: "q10",
-      text: "What is the correct distance to keep when overtaking a cyclist?",
-      answers: ["1 meter", "1.5 meters", "2 meters"],
+      text: {
+        no: "Hva er riktig avstand når du kjører forbi en syklist?",
+        en: "What is the correct distance to keep when overtaking a cyclist?",
+      },
+      answers: {
+        no: ["1 meter", "1,5 meter", "2 meter"],
+        en: ["1 meter", "1.5 meters", "2 meters"],
+      },
       correctIndex: 1,
     },
   ],
-};
-
-type Question = {
-  id: string;
-  text: string;
-  answers: string[];
-  correctIndex: number;
 };
 
 interface StudentQuizProps {
@@ -271,10 +427,10 @@ interface StudentQuizProps {
 export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   const navigate = useNavigate();
   const params = useParams<{ levelId?: string }>();
+  const { language, t } = useLanguage();
 
-  // Determine question set
   let questions: Question[] = [];
-  let quizTitle = "Practice Quiz";
+  let quizTitle = t("Practice Quiz");
 
   if (mode === "practice") {
     questions = PRACTICE_QUESTIONS;
@@ -282,15 +438,14 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
     const lvl = Number(params.levelId);
     if (lvl >= 1 && lvl <= 3) {
       questions = LEVEL_QUESTIONS[lvl] ?? [];
-      quizTitle = `Level ${lvl} Quiz`;
+      quizTitle = `${t("Level")} ${lvl} ${t("Quiz")}`;
     }
   } else if (level) {
     if (level >= 1 && level <= 3) {
       questions = LEVEL_QUESTIONS[level] ?? [];
-      quizTitle = `Level ${level} Quiz`;
+      quizTitle = `${t("Level")} ${level} ${t("Quiz")}`;
     }
   } else {
-    // Default fallback to practice
     questions = PRACTICE_QUESTIONS;
   }
 
@@ -299,61 +454,62 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const confettiRef = useRef<HTMLDivElement>(null);
 
+  const [correctCount, setCorrectCount] = useState(0);
+
   const question = questions[current];
 
-  // Confetti particle count and colors
-  const CONFETTI_COUNT = 20;
+  const CONFETTI_COUNT = 40;
   const CONFETTI_COLORS = ["#1e40af", "#2563eb", "#a5c9ff", "#d0e6ff"];
 
-  // Create confetti particles around the button perimeter
-  function createConfettiAroundButton(rect: DOMRect) {
+  function createConfettiAroundBox(box: DOMRect) {
     if (!confettiRef.current) return;
     confettiRef.current.innerHTML = "";
-
-    // Center of button
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    // Radius for spawning confetti around button (slightly outside button edges)
-    const radiusX = rect.width / 2 + 10; // 10px outside horizontal edges
-    const radiusY = rect.height / 2 + 10; // 10px outside vertical edges
 
     for (let i = 0; i < CONFETTI_COUNT; i++) {
       const particle = document.createElement("div");
       particle.className = "confetti-particle";
       particle.style.backgroundColor = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
 
-      // Distribute particles evenly around ellipse perimeter
-      const angle = (i / CONFETTI_COUNT) * 2 * Math.PI;
+      const perimeter = 2 * (box.width + box.height);
+      const pos = (perimeter / CONFETTI_COUNT) * i;
 
-      // Start position on ellipse perimeter
-      const startX = centerX + radiusX * Math.cos(angle);
-      const startY = centerY + radiusY * Math.sin(angle);
+      let x = 0;
+      let y = 0;
 
-      // Velocity vector for animation: outward from start position
-      // We'll store velocity as CSS variables for animation
-      // Velocity magnitude random between 20 and 60
-      const velocityMagnitude = Math.random() * 40 + 20;
-      const velocityX = Math.cos(angle) * velocityMagnitude;
-      const velocityY = Math.sin(angle) * velocityMagnitude;
+      if (pos < box.width) {
+        x = box.left + pos;
+        y = box.top;
+      } else if (pos < box.width + box.height) {
+        x = box.left + box.width;
+        y = box.top + (pos - box.width);
+      } else if (pos < 2 * box.width + box.height) {
+        x = box.left + (2 * box.width + box.height - pos);
+        y = box.top + box.height;
+      } else {
+        x = box.left;
+        y = box.top + (perimeter - pos);
+      }
 
-      particle.style.left = `${startX}px`;
-      particle.style.top = `${startY}px`;
-      particle.style.width = particle.style.height = `${Math.random() * 6 + 4}px`;
+      x += (Math.random() - 0.5) * 8;
+      y += (Math.random() - 0.5) * 8;
 
-      // Set CSS variables for animation
-      particle.style.setProperty("--dx", `${velocityX.toFixed(2)}px`);
-      particle.style.setProperty("--dy", `${velocityY.toFixed(2)}px`);
+      particle.style.position = "fixed";
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+
+      const size = Math.random() * 4 + 2;
+      particle.style.width = particle.style.height = `${size}px`;
+
+      particle.style.animationDelay = `${Math.random() * 300}ms`;
 
       confettiRef.current.appendChild(particle);
     }
   }
 
-  // Trigger confetti animation
-  function triggerConfettiAroundButton(rect: DOMRect) {
+  function triggerConfetti(box: DOMRect) {
     if (!confettiRef.current) return;
-    createConfettiAroundButton(rect);
     confettiRef.current.classList.add("confetti-active");
+    createConfettiAroundBox(box);
 
     setTimeout(() => {
       if (confettiRef.current) {
@@ -363,17 +519,42 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
     }, 1500);
   }
 
+  // Load sounds once
+  const successSound = useRef<HTMLAudioElement | null>(null);
+  const failSound = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    successSound.current = new Audio("/sounds/correct.mp3");
+    failSound.current = new Audio("/sounds/incorrect.mp3");
+  }, []);
+
+  function playSuccessSound() {
+    if (successSound.current) {
+      successSound.current.currentTime = 0;
+      successSound.current.play().catch(() => {});
+    }
+  }
+
+  function playFailSound() {
+    if (failSound.current) {
+      failSound.current.currentTime = 0;
+      failSound.current.play().catch(() => {});
+    }
+  }
+
   function handleAnswer(index: number, event: React.MouseEvent<HTMLButtonElement>) {
-    if (selected !== null) return; // Prevent multiple clicks
+    if (selected !== null) return;
     setSelected(index);
     const isCorrect = index === question.correctIndex;
     setFeedback(isCorrect ? "correct" : "wrong");
 
     if (isCorrect) {
-      // Get button position for confetti origin
       const button = event.currentTarget;
       const rect = button.getBoundingClientRect();
-      triggerConfettiAroundButton(rect);
+      triggerConfetti(rect);
+      playSuccessSound();
+    } else {
+      playFailSound();
     }
 
     setTimeout(() => {
@@ -381,66 +562,106 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
       setFeedback(null);
       if (current + 1 < questions.length) {
         setCurrent(current + 1);
+        if (isCorrect) {
+          setCorrectCount((c) => c + 1);
+        }
       } else {
-        // Calculate score
-        const score = questions.reduce((acc, _q, i) => {
-          if (i < current) return acc + 1;
-          if (i === current && isCorrect) return acc + 1;
-          return acc;
-        }, 0);
-
+        const finalScore = isCorrect ? correctCount + 1 : correctCount;
         navigate("/level/result", {
-          state: { score, total: questions.length },
+          state: { score: finalScore, total: questions.length },
         });
       }
     }, 1000);
   }
 
+  const [trafficLightState, setTrafficLightState] = useState<"red" | "yellow" | "green">("red");
+  const [animating, setAnimating] = useState(false);
+
+  const totalQuestions = questions.length;
+  const progress = selected !== null ? current + 1 : current;
+  const correctAnswers = correctCount;
+
+  useEffect(() => {
+    if (mode === "practice") {
+      setTrafficLightState("red");
+      return;
+    }
+
+    if (totalQuestions === 0) {
+      setTrafficLightState("red");
+      return;
+    }
+
+    const progressRatio = progress / totalQuestions;
+    const passThreshold = 0.7;
+
+    let newState: "red" | "yellow" | "green" = "red";
+
+    if (correctAnswers / totalQuestions >= passThreshold) {
+      newState = "green";
+    } else if (progressRatio >= 0.5) {
+      newState = "yellow";
+    } else {
+      newState = "red";
+    }
+
+    if (newState !== trafficLightState) {
+      setAnimating(true);
+      setTrafficLightState(newState);
+      const timer = setTimeout(() => setAnimating(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [progress, correctAnswers, totalQuestions, mode, trafficLightState]);
+
   if (!question) {
-    return <div className="card">Ingen spørsmål tilgjengelig.</div>;
+    return <div className="card">{t("No questions available.")}</div>;
   }
 
   return (
-    <>
-      <div className="card quiz-card">
-        <h2>{quizTitle}</h2>
+    <div className="card quiz-card level-card" style={{ position: "relative", paddingBottom: "72px" }}>
+      <h2>{quizTitle}</h2>
 
-        <div className="question">
-          <h3>{question.text}</h3>
+      {(mode !== "practice") && (
+        <div
+          className={`traffic-light ${trafficLightState} ${animating ? "traffic-light-anim" : ""}`}
+          aria-label="Progress traffic light indicator"
+          style={{ position: "absolute", top: 20, right: 20 }}
+        >
+          <div className="light red" />
+          <div className="light yellow" />
+          <div className="light green" />
         </div>
+      )}
 
-        <div className="answers">
-          {question.answers.map((answer, index) => {
-            let className = "answer-btn";
-
-            if (selected === index) {
-              className += feedback === "correct" ? " correct pop" : " wrong shake";
-            } else if (feedback && index === question.correctIndex) {
-              className += " correct";
-            }
-
-            return (
-              <button
-                key={index}
-                className={className}
-                onClick={(e) => handleAnswer(index, e)}
-                disabled={selected !== null}
-                type="button"
-              >
-                {answer}
-              </button>
-            );
-          })}
-        </div>
+      <div className="question">
+        <h3>{question.text[language]}</h3>
       </div>
 
-      {/* Confetti container appended to body, fixed position */}
-      <div
-        ref={confettiRef}
-        className="confetti-container"
-        aria-hidden="true"
-        style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 9999, overflow: "visible" }}
-      />
-    </>
+      <div className="answers">
+        {question.answers[language].map((answer, index) => {
+          let className = "answer-btn";
+
+          if (selected === index) {
+            className += feedback === "correct" ? " correct pop" : " wrong shake";
+          } else if (feedback && index === question.correctIndex) {
+            className += " correct";
+          }
+
+          return (
+            <button
+              key={index}
+              className={className}
+              onClick={(e) => handleAnswer(index, e)}
+              disabled={selected !== null}
+              type="button"
+            >
+              {answer}
+            </button>
+          );
+        })}
+      </div>
+
+      <div ref={confettiRef} className="confetti-container" aria-hidden="true" />
+    </div>
   );
 }

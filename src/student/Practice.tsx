@@ -8,16 +8,17 @@ export default function Practice() {
   return (
     <div className="student-page">
       <div className="student-container">
-        <div className="card">
+        <div className="card" style={{ position: "relative", paddingBottom: "72px" }}>
           <h2>Practice Quiz</h2>
           <StudentQuiz mode="practice" />
-          <div className="student-back-button-container">
+
+          <div style={{ position: "absolute", bottom: 20, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
             <button
-              className="student-back-button"
+              className="student-primary-button"
               onClick={() => navigate("/")}
               type="button"
             >
-              ⬅ Back to Menu
+              Back to Menu
             </button>
           </div>
         </div>
