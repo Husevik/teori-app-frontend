@@ -334,3 +334,52 @@ button {
     transform: rotate(360deg);
   }
 }
+
+/* =========================
+   TRAFFIC LIGHT COMPONENT
+   ========================= */
+
+.traffic-light {
+  width: 36px;
+  background: #222;
+  border-radius: 12px;
+  padding: 8px 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  border: 2px solid #444;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  z-index: 20;
+  transition: box-shadow 0.3s ease;
+}
+
+.traffic-light-anim {
+  box-shadow: 0 0 12px 4px #fbbf24;
+}
+
+.traffic-light .light {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #444;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  margin: 4px 0;
+}
+
+.traffic-light.red .light.red {
+  background: #ef4444;
+  box-shadow: 0 0 8px 2px #ef4444;
+}
+
+.traffic-light.yellow .light.yellow {
+  background: #fbbf24;
+  box-shadow: 0 0 8px 2px #fbbf24;
+}
+
+.traffic-light.green .light.green {
+  background: #34d399;
+  box-shadow: 0 0 8px 2px #34d399;
+}
