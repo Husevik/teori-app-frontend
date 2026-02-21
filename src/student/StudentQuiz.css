@@ -110,3 +110,74 @@
     opacity: 0;
   }
 }
+
+/* Traffic light styles */
+.traffic-light {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 28px;
+  padding: 2px;
+  background: #222;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.8);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.light {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #444;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.7);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.light.on.red {
+  background-color: #ef4444;
+  box-shadow: 0 0 5px #ef4444;
+}
+
+.light.off.red {
+  background-color: #4b1a1a;
+}
+
+.light.on.yellow {
+  background-color: #facc15;
+  box-shadow: 0 0 5px #facc15;
+}
+
+.light.off.yellow {
+  background-color: #4b441a;
+}
+
+.light.on.green {
+  background-color: #22c55e;
+  box-shadow: 0 0 5px #22c55e;
+}
+
+.light.off.green {
+  background-color: #1f3a1f;
+}
+
+/* green-bonus class colors red/yellow lights green instead */
+.light.green-bonus.red.on {
+  background-color: #22c55e;
+  box-shadow: 0 0 5px #22c55e;
+}
+
+.light.green-bonus.yellow.on {
+  background-color: #22c55e;
+  box-shadow: 0 0 5px #22c55e;
+}
+
+.light.green-bonus.red.off {
+  background-color: #1f3a1f;
+}
+
+.light.green-bonus.yellow.off {
+  background-color: #1f3a1f;
+}

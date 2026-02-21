@@ -424,6 +424,46 @@ interface StudentQuizProps {
   level?: number;
 }
 
+function getBestResultStorageKey(level: number): string {
+  return `best_traffic_light_level_${level}`;
+}
+
+function getBestResult(level: number): number {
+  if (level < 1) return 0;
+  const key = getBestResultStorageKey(level);
+  const stored = localStorage.getItem(key);
+  if (!stored) return 0;
+  const val = Number(stored);
+  if (val >= 1 && val <= 3) return val;
+  return 0;
+}
+
+function setBestResult(level: number, greenLights: number): void {
+  if (level < 1) return;
+  if (greenLights < 0 || greenLights > 3) return;
+  const key = getBestResultStorageKey(level);
+  const currentBest = getBestResult(level);
+  if (greenLights > currentBest) {
+    localStorage.setItem(key, greenLights.toString());
+  }
+}
+
+function calculateGreenLights(correctCount: number, totalQuestions: number): number {
+  if (totalQuestions === 10) {
+    if (correctCount === 10) return 3; // 3 green
+    if (correctCount === 9) return 2; // 2 green
+    if (correctCount === 8) return 1; // 1 green
+    if (correctCount >= 5) return 0; // yellow only (handled separately)
+    return 0; // red only
+  }
+  // Fallback for other question counts: simple thresholds
+  const ratio = correctCount / totalQuestions;
+  if (ratio === 1) return 3;
+  if (ratio >= 0.9) return 2;
+  if (ratio >= 0.8) return 1;
+  return 0;
+}
+
 export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   const navigate = useNavigate();
   const params = useParams<{ levelId?: string }>();
@@ -432,6 +472,8 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   let questions: Question[] = [];
   let quizTitle = t("Practice Quiz");
 
+  let currentLevel = 0;
+
   if (mode === "practice") {
     questions = PRACTICE_QUESTIONS;
   } else if (params.levelId) {
@@ -439,11 +481,13 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
     if (lvl >= 1 && lvl <= 3) {
       questions = LEVEL_QUESTIONS[lvl] ?? [];
       quizTitle = `${t("Level")} ${lvl} ${t("Quiz")}`;
+      currentLevel = lvl;
     }
   } else if (level) {
     if (level >= 1 && level <= 3) {
       questions = LEVEL_QUESTIONS[level] ?? [];
       quizTitle = `${t("Level")} ${level} ${t("Quiz")}`;
+      currentLevel = level;
     }
   } else {
     questions = PRACTICE_QUESTIONS;
@@ -454,7 +498,15 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const confettiRef = useRef<HTMLDivElement>(null);
 
+  // Reset correctCount when level or questions change
   const [correctCount, setCorrectCount] = useState(0);
+
+  useEffect(() => {
+    setCorrectCount(0);
+    setSelected(null);
+    setFeedback(null);
+    setCurrent(0);
+  }, [currentLevel, questions.length]);
 
   const question = questions[current];
 
@@ -567,6 +619,11 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
         }
       } else {
         const finalScore = isCorrect ? correctCount + 1 : correctCount;
+        // Calculate green lights
+        const greenLights = calculateGreenLights(finalScore, questions.length);
+        if (currentLevel > 0) {
+          setBestResult(currentLevel, greenLights);
+        }
         navigate("/level/result", {
           state: { score: finalScore, total: questions.length },
         });
@@ -574,64 +631,206 @@ export default function StudentQuiz({ mode, level }: StudentQuizProps) {
     }, 1000);
   }
 
-  const [trafficLightState, setTrafficLightState] = useState<"red" | "yellow" | "green">("red");
-  const [animating, setAnimating] = useState(false);
+  // Traffic light display logic for quiz level view
+  // Show traffic light only in level quiz (not practice) and only in header top-right
+  // Size reduced and positioned absolutely in header
 
-  const totalQuestions = questions.length;
-  const progress = selected !== null ? current + 1 : current;
-  const correctAnswers = correctCount;
+  // For quiz traffic light, show based on current correctCount
+  // If no questions answered yet (correctCount=0 and current=0), show red only (??)
 
-  useEffect(() => {
-    if (mode === "practice") {
-      setTrafficLightState("red");
-      return;
-    }
+  // Compose class names for lights
+  // Classes:
+  // .light.red, .light.yellow, .light.green
+  // on/off
+  // color modifiers: green-bonus for green coloring on red/yellow
 
-    if (totalQuestions === 0) {
-      setTrafficLightState("red");
-      return;
-    }
+  // Determine light state for quiz traffic light
+  interface LightState {
+    redOn: boolean;
+    yellowOn: boolean;
+    greenOn: boolean;
+    redIsGreen: boolean;
+    yellowIsGreen: boolean;
+  }
 
-    const progressRatio = progress / totalQuestions;
-    const passThreshold = 0.7;
+  let lightState: LightState = {
+    redOn: false,
+    yellowOn: false,
+    greenOn: false,
+    redIsGreen: false,
+    yellowIsGreen: false,
+  };
 
-    let newState: "red" | "yellow" | "green" = "red";
+  const isLevelQuiz = mode !== "practice" && currentLevel >= 1 && currentLevel <= 3 && questions.length === 10;
 
-    if (correctAnswers / totalQuestions >= passThreshold) {
-      newState = "green";
-    } else if (progressRatio >= 0.5) {
-      newState = "yellow";
+  if (isLevelQuiz) {
+    // Determine initial light state based on currentLevel and progress
+    // For level 1:
+    //   Before playing: show only red
+    // For level > 1:
+    //   If previous level not passed (best result < 1 green): show lock (no traffic light)
+    //   If unlocked but not played: show only red
+    //   After playing: show traffic light based on saved score
+
+    // Get saved best result for current level
+    const savedGreenLights = getBestResult(currentLevel);
+
+    // Determine if previous level passed (for levels > 1)
+    const prevLevelPassed = currentLevel === 1 ? true : getBestResult(currentLevel - 1) >= 1;
+
+    if (currentLevel === 1) {
+      // Level 1: before playing show only red
+      if (correctCount === 0 && current === 0) {
+        lightState = {
+          redOn: true,
+          yellowOn: false,
+          greenOn: false,
+          redIsGreen: false,
+          yellowIsGreen: false,
+        };
+      } else {
+        // Show traffic light based on correctCount
+        if (correctCount >= 0 && correctCount <= 4) {
+          lightState = {
+            redOn: true,
+            yellowOn: false,
+            greenOn: false,
+            redIsGreen: false,
+            yellowIsGreen: false,
+          };
+        } else if (correctCount >= 5 && correctCount <= 7) {
+          lightState = {
+            redOn: false,
+            yellowOn: true,
+            greenOn: false,
+            redIsGreen: false,
+            yellowIsGreen: false,
+          };
+        } else if (correctCount === 8) {
+          lightState = {
+            redOn: false,
+            yellowOn: false,
+            greenOn: true,
+            redIsGreen: false,
+            yellowIsGreen: false,
+          };
+        } else if (correctCount === 9) {
+          lightState = {
+            redOn: false,
+            yellowOn: true,
+            greenOn: true,
+            redIsGreen: false,
+            yellowIsGreen: true,
+          };
+        } else if (correctCount === 10) {
+          lightState = {
+            redOn: true,
+            yellowOn: true,
+            greenOn: true,
+            redIsGreen: true,
+            yellowIsGreen: true,
+          };
+        }
+      }
     } else {
-      newState = "red";
+      // Levels > 1
+      if (!prevLevelPassed) {
+        // Previous level not passed: show no traffic light (lock handled in Play.tsx)
+        lightState = {
+          redOn: false,
+          yellowOn: false,
+          greenOn: false,
+          redIsGreen: false,
+          yellowIsGreen: false,
+        };
+      } else {
+        // Unlocked
+        if (savedGreenLights === 0) {
+          // Not played yet: show only red
+          lightState = {
+            redOn: true,
+            yellowOn: false,
+            greenOn: false,
+            redIsGreen: false,
+            yellowIsGreen: false,
+          };
+        } else {
+          // Played: show traffic light based on savedGreenLights
+          switch (savedGreenLights) {
+            case 1:
+              lightState = {
+                redOn: false,
+                yellowOn: false,
+                greenOn: true,
+                redIsGreen: false,
+                yellowIsGreen: false,
+              };
+              break;
+            case 2:
+              lightState = {
+                redOn: false,
+                yellowOn: true,
+                greenOn: true,
+                redIsGreen: false,
+                yellowIsGreen: true,
+              };
+              break;
+            case 3:
+              lightState = {
+                redOn: true,
+                yellowOn: true,
+                greenOn: true,
+                redIsGreen: true,
+                yellowIsGreen: true,
+              };
+              break;
+            default:
+              // fallback to red only
+              lightState = {
+                redOn: true,
+                yellowOn: false,
+                greenOn: false,
+                redIsGreen: false,
+                yellowIsGreen: false,
+              };
+              break;
+          }
+        }
+      }
     }
-
-    if (newState !== trafficLightState) {
-      setAnimating(true);
-      setTrafficLightState(newState);
-      const timer = setTimeout(() => setAnimating(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [progress, correctAnswers, totalQuestions, mode, trafficLightState]);
+  }
 
   if (!question) {
     return <div className="card">{t("No questions available.")}</div>;
   }
 
+  const redClass = ["light", "red", lightState.redOn ? "on" : "off"];
+  if (lightState.redIsGreen) {
+    redClass.push("green-bonus");
+  }
+
+  const yellowClass = ["light", "yellow", lightState.yellowOn ? "on" : "off"];
+  if (lightState.yellowIsGreen) {
+    yellowClass.push("green-bonus");
+  }
+
+  const greenClass = ["light", "green", lightState.greenOn ? "on" : "off"];
+
   return (
     <div className="card quiz-card level-card" style={{ position: "relative", paddingBottom: "72px" }}>
-      <h2>{quizTitle}</h2>
-
-      {(mode !== "practice") && (
-        <div
-          className={`traffic-light ${trafficLightState} ${animating ? "traffic-light-anim" : ""}`}
-          aria-label="Progress traffic light indicator"
-          style={{ position: "absolute", top: 20, right: 20 }}
-        >
-          <div className="light red" />
-          <div className="light yellow" />
-          <div className="light green" />
-        </div>
-      )}
+      <h2 style={{ position: "relative" }}>{quizTitle}
+        {isLevelQuiz && (lightState.redOn || lightState.yellowOn || lightState.greenOn) && (
+          <div
+            className="traffic-light"
+            aria-label="Progress traffic light indicator"
+            style={{ position: "absolute", top: 0, right: 0 }}
+          >
+            <div className={redClass.join(" ")} aria-hidden="true" />
+            <div className={yellowClass.join(" ")} aria-hidden="true" />
+            <div className={greenClass.join(" ")} aria-hidden="true" />
+          </div>
+        )}
+      </h2>
 
       <div className="question">
         <h3>{question.text[language]}</h3>
